@@ -3,21 +3,18 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>TM Tournament — Wheel of Fate</title>
+<title>TM Tournament — Slot & Wheel</title>
 <style>
   * { box-sizing: border-box; margin: 0; padding: 0; }
   body {
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
     background: radial-gradient(ellipse at top, #1a1f3a 0%, #0a0e1f 100%);
-    color: #f5f4ef;
-    min-height: 100vh;
-    padding: 16px;
-    line-height: 1.5;
-    overflow-x: hidden;
+    color: #f5f4ef; min-height: 100vh; padding: 16px;
+    line-height: 1.5; overflow-x: hidden;
   }
   .container { max-width: 760px; margin: 0 auto; }
   
-  .header { text-align: center; margin-bottom: 24px; padding-top: 8px; }
+  .header { text-align: center; margin-bottom: 20px; padding-top: 8px; }
   h1 {
     font-size: 26px; font-weight: 700;
     background: linear-gradient(135deg, #ffd700 0%, #ffa500 50%, #ff6b35 100%);
@@ -36,7 +33,7 @@
     font-size: 12px; font-weight: 600;
     background: rgba(255,255,255,0.08);
     border: 1px solid rgba(255,255,255,0.15);
-    color: #c0c4e0; transition: all 0.3s;
+    color: #c0c4e0;
   }
   .round-pill.active {
     background: linear-gradient(135deg, #ffd700, #ffa500);
@@ -54,9 +51,114 @@
     border-radius: 20px; padding: 24px 20px; margin-bottom: 20px;
   }
   
-  .spinner-prompt { text-align: center; font-size: 14px; color: #c0c4e0; margin-bottom: 16px; }
-  .spinner-prompt strong { color: #ffd700; font-weight: 600; }
+  .stage-title {
+    text-align: center; font-size: 12px;
+    color: #ffd700; text-transform: uppercase;
+    letter-spacing: 2px; font-weight: 700;
+    margin-bottom: 16px;
+  }
   
+  .stage-message {
+    text-align: center; font-size: 14px;
+    color: #c0c4e0; margin-bottom: 16px;
+  }
+  .stage-message strong { color: #ffd700; font-weight: 600; }
+  
+  /* === SLOT MACHINE === */
+  .slot-machine {
+    background: linear-gradient(180deg, #2a2540 0%, #1a1530 100%);
+    border: 4px solid #b8860b;
+    border-radius: 16px;
+    padding: 20px;
+    max-width: 400px;
+    margin: 0 auto 20px;
+    box-shadow: 
+      0 0 0 4px #1a1f3a,
+      0 0 0 6px #b8860b,
+      0 12px 32px rgba(0,0,0,0.5),
+      inset 0 0 30px rgba(0,0,0,0.4);
+    position: relative;
+  }
+  .slot-machine::before {
+    content: '★ ★ ★';
+    position: absolute; top: 8px; left: 50%;
+    transform: translateX(-50%);
+    color: #ffd700; font-size: 12px;
+    letter-spacing: 8px;
+  }
+  .slot-window {
+    background: #0a0e1f;
+    border: 3px solid #ffd700;
+    border-radius: 8px;
+    height: 70px;
+    overflow: hidden;
+    position: relative;
+    margin: 16px 0;
+    box-shadow: inset 0 4px 12px rgba(0,0,0,0.6);
+  }
+  .slot-reel {
+    position: absolute; top: 0; left: 0; right: 0;
+    transition: transform 0s linear;
+  }
+  .slot-item {
+    height: 70px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 22px;
+    font-weight: 700;
+    color: #ffd700;
+    text-shadow: 0 0 12px rgba(255,215,0,0.5);
+    letter-spacing: 1px;
+    border-bottom: 1px solid rgba(255,215,0,0.1);
+  }
+  .slot-window-frame {
+    position: absolute; inset: 0;
+    pointer-events: none;
+    background: linear-gradient(
+      180deg,
+      rgba(10,14,31,0.7) 0%,
+      transparent 30%,
+      transparent 70%,
+      rgba(10,14,31,0.7) 100%
+    );
+  }
+  .slot-pull-btn {
+    background: linear-gradient(135deg, #e63946, #c1121f);
+    border: 3px solid #8b1525;
+    color: #fff;
+    padding: 14px 32px;
+    font-size: 16px;
+    font-weight: 800;
+    border-radius: 50px;
+    cursor: pointer;
+    text-transform: uppercase;
+    letter-spacing: 3px;
+    box-shadow: 
+      0 6px 0 #8b1525,
+      0 8px 16px rgba(0,0,0,0.4);
+    transition: all 0.1s;
+    font-family: inherit;
+    width: 100%;
+    max-width: 240px;
+    display: block;
+    margin: 0 auto;
+  }
+  .slot-pull-btn:hover:not(:disabled) {
+    transform: translateY(2px);
+    box-shadow: 0 4px 0 #8b1525, 0 6px 12px rgba(0,0,0,0.4);
+  }
+  .slot-pull-btn:active:not(:disabled) {
+    transform: translateY(6px);
+    box-shadow: 0 0 0 #8b1525, 0 2px 6px rgba(0,0,0,0.4);
+  }
+  .slot-pull-btn:disabled {
+    opacity: 0.5; cursor: not-allowed;
+    background: #555; border-color: #333;
+    box-shadow: 0 6px 0 #333;
+  }
+  
+  /* === FORTUNE WHEEL === */
   .wheel-container {
     position: relative; width: 100%; max-width: 460px;
     margin: 0 auto 20px; aspect-ratio: 1;
@@ -86,32 +188,43 @@
     box-shadow: 0 4px 12px rgba(0,0,0,0.4), inset 0 -4px 8px rgba(0,0,0,0.2);
   }
   
-  .picker-label {
-    font-size: 13px; color: #8a8db5;
-    text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 4px;
+  /* === NAME-CONFIRM (the chosen spinner) === */
+  .chosen-spinner-card {
+    background: linear-gradient(135deg, rgba(255,215,0,0.15), rgba(255,165,0,0.08));
+    border: 2px solid #ffd700;
+    border-radius: 16px;
+    padding: 20px;
+    text-align: center;
+    margin-bottom: 16px;
+    box-shadow: 0 0 24px rgba(255,215,0,0.2);
   }
+  .chosen-label {
+    font-size: 11px; color: #ffd700;
+    text-transform: uppercase; letter-spacing: 3px;
+    margin-bottom: 8px; font-weight: 700;
+  }
+  .chosen-name {
+    font-size: 32px; font-weight: 800;
+    color: #fff;
+    margin-bottom: 12px;
+    letter-spacing: 1px;
+  }
+  .chosen-prompt {
+    font-size: 13px; color: #c0c4e0; margin-bottom: 12px;
+  }
+  .spin-action-btn {
+    background: linear-gradient(135deg, #ff6b35, #ff8e3c);
+    border: none; color: #fff;
+    padding: 14px 32px; font-size: 14px;
+    font-weight: 700; border-radius: 50px;
+    cursor: pointer;
+    text-transform: uppercase; letter-spacing: 2px;
+    box-shadow: 0 6px 20px rgba(255,107,53,0.4);
+    font-family: inherit;
+  }
+  .spin-action-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 28px rgba(255,107,53,0.6); }
   
-  .tm-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(90px, 1fr));
-    gap: 8px; width: 100%;
-  }
-  .tm-btn {
-    background: rgba(255,255,255,0.06);
-    border: 1px solid rgba(255,255,255,0.15);
-    border-radius: 10px; padding: 12px 8px;
-    font-size: 13px; color: #f5f4ef;
-    cursor: pointer; transition: all 0.2s;
-    font-family: inherit; font-weight: 500;
-  }
-  .tm-btn:hover:not(:disabled) {
-    background: rgba(255,215,0,0.15);
-    border-color: #ffd700; transform: translateY(-2px);
-    box-shadow: 0 4px 16px rgba(255,215,0,0.2);
-  }
-  .tm-btn:active:not(:disabled) { transform: translateY(0); }
-  .tm-btn:disabled { opacity: 0.3; cursor: not-allowed; }
-  
+  /* === RESULT REVEAL === */
   .result-overlay {
     position: fixed; inset: 0;
     background: rgba(0,0,0,0.85);
@@ -150,8 +263,8 @@
     cursor: pointer; text-transform: uppercase; letter-spacing: 1.5px;
     font-family: inherit;
   }
-  .result-close:hover { background: rgba(255,215,0,0.3); }
   
+  /* === PAIRINGS DISPLAY === */
   .section-title {
     font-size: 12px; color: #ffd700;
     text-transform: uppercase; letter-spacing: 2px;
@@ -177,23 +290,50 @@
     font-weight: 700; letter-spacing: 1px;
   }
   
+  /* === REMAINING TM CHIPS === */
+  .remaining-list {
+    display: flex; flex-wrap: wrap; gap: 6px;
+    justify-content: center; margin-top: 12px;
+  }
+  .tm-chip {
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.15);
+    color: #c0c4e0;
+    padding: 4px 10px;
+    border-radius: 12px;
+    font-size: 11px;
+    font-weight: 500;
+  }
+  
+  /* === BANNERS === */
+  .complete-banner, .waiting-banner {
+    border-radius: 14px; padding: 20px;
+    margin-bottom: 16px; text-align: center;
+  }
   .complete-banner {
     background: linear-gradient(135deg, rgba(72,187,120,0.2), rgba(72,187,120,0.1));
     border: 1px solid rgba(72,187,120,0.4);
-    border-radius: 14px; padding: 16px 20px; margin-bottom: 16px;
-    display: flex; justify-content: space-between; align-items: center;
-    flex-wrap: wrap; gap: 12px;
   }
   .complete-banner .label { color: #68d391; font-weight: 600; font-size: 14px; }
+  .waiting-banner {
+    background: linear-gradient(135deg, rgba(255,165,0,0.15), rgba(255,107,53,0.08));
+    border: 1px solid rgba(255,165,0,0.4);
+  }
+  .waiting-banner .icon { font-size: 32px; margin-bottom: 8px; }
+  .waiting-banner .title {
+    color: #ffd700; font-size: 16px; font-weight: 700;
+    margin-bottom: 4px; text-transform: uppercase; letter-spacing: 1px;
+  }
+  .waiting-banner .desc { color: #c0c4e0; font-size: 13px; }
   
   .tournament-done {
     background: linear-gradient(135deg, #ffd700, #ff6b35);
     color: #1a1f3a; text-align: center;
     padding: 28px 20px; border-radius: 20px; margin-bottom: 16px;
     font-weight: 700; font-size: 18px; letter-spacing: 1px;
-    box-shadow: 0 8px 32px rgba(255,107,53,0.4);
   }
   
+  /* === HISTORY === */
   details {
     margin-bottom: 16px;
     background: rgba(255,255,255,0.03);
@@ -213,9 +353,7 @@
     text-transform: uppercase; letter-spacing: 1.5px; font-weight: 600;
   }
   .history-pairings {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-    gap: 6px;
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 6px;
   }
   .history-pair {
     font-size: 12px; padding: 8px 12px;
@@ -224,6 +362,7 @@
     color: #c0c4e0;
   }
   
+  /* === ADMIN === */
   .admin-bar {
     display: flex; justify-content: center; gap: 8px;
     margin-top: 24px; padding-top: 16px;
@@ -239,9 +378,7 @@
   }
   .admin-btn:hover { background: rgba(255,255,255,0.05); color: #f5f4ef; }
   
-  .live-status {
-    text-align: center; font-size: 11px; color: #5f6291; margin-top: 8px;
-  }
+  .live-status { text-align: center; font-size: 11px; color: #5f6291; margin-top: 8px; }
   .live-dot {
     display: inline-block; width: 6px; height: 6px;
     background: #48bb78; border-radius: 50%;
@@ -260,6 +397,7 @@
     margin-bottom: 12px; text-align: center;
   }
   
+  /* === MODAL === */
   .modal-bg {
     position: fixed; inset: 0;
     background: rgba(0,0,0,0.8);
@@ -313,7 +451,7 @@
   @media (max-width: 480px) {
     h1 { font-size: 22px; }
     .stage { padding: 16px 12px; }
-    .result-opponent { font-size: 28px; }
+    .result-opponent, .chosen-name { font-size: 26px; }
   }
 </style>
 </head>
@@ -321,7 +459,7 @@
 <div class="container">
   <div class="header">
     <h1>🎰 TM Tournament</h1>
-    <div class="subtitle">Wheel of Fate</div>
+    <div class="subtitle">Slot &amp; Wheel of Fate</div>
   </div>
   
   <div class="round-bar" id="round-bar"></div>
@@ -351,7 +489,7 @@
 
 <script>
 let state = null;
-let spinning = false;
+let busy = false;            // local lock (slot pulling or wheel spinning)
 let lastUpdate = 0;
 let currentWheelRotation = 0;
 
@@ -361,7 +499,7 @@ const WHEEL_COLORS = [
 ];
 
 async function fetchState() {
-  if (spinning) return;
+  if (busy) return;
   try {
     const r = await fetch('/api/state');
     const newState = await r.json();
@@ -391,6 +529,88 @@ function renderRoundBar() {
   bar.innerHTML = html;
 }
 
+// === SLOT MACHINE ===
+async function pullSlot() {
+  if (busy) return;
+  busy = true;
+  
+  const eligible = state.tms.filter(t => !state.paired.includes(t));
+  if (eligible.length === 0) { busy = false; return; }
+  
+  // Disable button visually
+  const btn = document.getElementById('slot-pull-btn');
+  if (btn) btn.disabled = true;
+  
+  // Start spinning the reel with random names
+  const reel = document.getElementById('slot-reel');
+  let spinInterval;
+  if (reel) {
+    let pos = 0;
+    spinInterval = setInterval(() => {
+      pos -= 70;
+      reel.style.transition = 'transform 0.08s linear';
+      reel.style.transform = `translateY(${pos}px)`;
+      // Append new random item to keep it cycling
+      const newItem = document.createElement('div');
+      newItem.className = 'slot-item';
+      newItem.textContent = eligible[Math.floor(Math.random() * eligible.length)];
+      reel.appendChild(newItem);
+    }, 80);
+  }
+  
+  // Call backend
+  let data;
+  try {
+    const r = await fetch('/api/slot-pull', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({})
+    });
+    data = await r.json();
+    if (data.error) {
+      clearInterval(spinInterval);
+      busy = false;
+      showError(data.error);
+      fetchState();
+      return;
+    }
+  } catch (e) {
+    clearInterval(spinInterval);
+    busy = false;
+    showError('Connection error.');
+    return;
+  }
+  
+  // Wait for animation drama
+  await new Promise(r => setTimeout(r, 2000));
+  clearInterval(spinInterval);
+  
+  // Land on the chosen name with smooth deceleration
+  if (reel) {
+    // Add the chosen name as the next item, and decelerate to it
+    const finalItem = document.createElement('div');
+    finalItem.className = 'slot-item';
+    finalItem.textContent = data.nextSpinner;
+    finalItem.id = 'slot-final';
+    reel.appendChild(finalItem);
+    
+    // Get current position and target
+    const items = reel.children.length;
+    const targetPos = -(items - 1) * 70;
+    reel.style.transition = 'transform 1.2s cubic-bezier(0.17, 0.67, 0.16, 0.99)';
+    reel.style.transform = `translateY(${targetPos}px)`;
+  }
+  
+  await new Promise(r => setTimeout(r, 1400));
+  
+  // Update state — render() will now show the chosen-spinner card
+  state = data.state;
+  lastUpdate = state.lastUpdate;
+  busy = false;
+  render();
+}
+
+// === FORTUNE WHEEL ===
 function buildWheel(opponents) {
   const cx = 230, cy = 230, r = 220;
   const n = opponents.length;
@@ -427,13 +647,15 @@ function buildWheel(opponents) {
   return `<svg class="wheel-svg" id="wheel-svg" viewBox="0 0 460 460" xmlns="http://www.w3.org/2000/svg" style="transform: rotate(${currentWheelRotation}deg);"><circle cx="${cx}" cy="${cy}" r="${r+4}" fill="#8b6914"/><circle cx="${cx}" cy="${cy}" r="${r+2}" fill="#1a1f3a"/>${paths}${labels}</svg>`;
 }
 
-async function spinWheel(tm) {
-  if (spinning) return;
-  spinning = true;
+async function spinWheel() {
+  if (busy || !state.currentSpinner) return;
+  busy = true;
   
+  const tm = state.currentSpinner;
   const available = state.tms.filter(t => !state.paired.includes(t));
   const others = available.filter(p => p !== tm);
   
+  // Render the wheel stage
   renderSpinStage(tm, others);
   await new Promise(r => setTimeout(r, 400));
   
@@ -446,17 +668,18 @@ async function spinWheel(tm) {
     });
     data = await r.json();
     if (data.error) {
-      spinning = false;
+      busy = false;
       showError(data.error);
       fetchState();
       return;
     }
   } catch (e) {
-    spinning = false;
-    showError('Connection error. Try again.');
+    busy = false;
+    showError('Connection error.');
     return;
   }
   
+  // Calculate landing rotation
   const opponentIndex = others.indexOf(data.opponent);
   const anglePer = 360 / others.length;
   const targetMidAngle = opponentIndex * anglePer + anglePer / 2;
@@ -471,6 +694,7 @@ async function spinWheel(tm) {
   
   await new Promise(r => setTimeout(r, 5200));
   
+  // Reveal
   document.getElementById('result-spinner-name').textContent = tm;
   document.getElementById('result-opponent-name').textContent = data.opponent;
   document.getElementById('result-overlay').classList.add('show');
@@ -478,7 +702,7 @@ async function spinWheel(tm) {
   
   state = data.state;
   lastUpdate = state.lastUpdate;
-  spinning = false;
+  busy = false;
 }
 
 function fireConfetti() {
@@ -504,7 +728,8 @@ function renderSpinStage(tm, others) {
   const main = document.getElementById('main-content');
   main.innerHTML = `
     <div class="stage">
-      <div class="spinner-prompt"><strong>${tm}</strong> is spinning the wheel of fate...</div>
+      <div class="stage-title">⚡ The Wheel Decides ⚡</div>
+      <div class="stage-message"><strong>${tm}</strong> is spinning the wheel of fate...</div>
       <div class="wheel-container">
         <div class="wheel-pointer"></div>
         ${buildWheel(others)}
@@ -514,10 +739,28 @@ function renderSpinStage(tm, others) {
   `;
 }
 
+function renderSlotMachine(eligible) {
+  // Build initial reel with a few random items so it doesn't look empty
+  let reelHtml = '';
+  for (let i = 0; i < 6; i++) {
+    const tm = eligible[Math.floor(Math.random() * eligible.length)];
+    reelHtml += `<div class="slot-item">${tm}</div>`;
+  }
+  return `
+    <div class="slot-machine">
+      <div class="slot-window">
+        <div class="slot-reel" id="slot-reel">${reelHtml}</div>
+        <div class="slot-window-frame"></div>
+      </div>
+      <button class="slot-pull-btn" id="slot-pull-btn" onclick="pullSlot()">🎰 Pull!</button>
+    </div>
+  `;
+}
+
 function render() {
   if (!state) return;
   renderRoundBar();
-  if (spinning) return;
+  if (busy) return;
   
   const main = document.getElementById('main-content');
   const available = state.tms.filter(t => !state.paired.includes(t));
@@ -527,39 +770,55 @@ function render() {
   
   let html = '';
   
+  // === FLOW STATES ===
   if (tournamentComplete) {
     html += `<div class="tournament-done">🏆 Tournament Complete — All 8 rounds done</div>`;
-  } else if (roundComplete) {
+  } 
+  else if (roundComplete) {
     html += `
       <div class="complete-banner">
-        <span class="label">✓ Round ${state.currentRound} complete</span>
-        <button class="modal-btn primary" style="width:auto;padding:8px 20px;" onclick="advanceRound()">
-          Start Round ${state.currentRound + 1} →
-        </button>
+        <div style="font-size:24px;margin-bottom:6px;">🎉</div>
+        <span class="label">Round ${state.currentRound} complete</span>
+        <div style="font-size:12px;color:#8a8db5;margin-top:8px;">Waiting for admin to start the next round</div>
       </div>
     `;
-  } else {
-    const previewWheel = available.length > 1 ? available.slice(1) : ['?'];
+  }
+  else if (!state.roundActive) {
+    // Waiting for admin to start this round
+    html += `
+      <div class="waiting-banner">
+        <div class="icon">🔒</div>
+        <div class="title">Round ${state.currentRound} — Not Started</div>
+        <div class="desc">Waiting for admin to begin the round</div>
+      </div>
+    `;
+  }
+  else if (state.currentSpinner) {
+    // Slot has picked someone — they need to spin the wheel
+    html += `
+      <div class="chosen-spinner-card">
+        <div class="chosen-label">★ Up Next ★</div>
+        <div class="chosen-name">${state.currentSpinner}</div>
+        <div class="chosen-prompt">Hit the button to spin the wheel of fate</div>
+        <button class="spin-action-btn" onclick="spinWheel()">🎡 Spin the Wheel</button>
+      </div>
+    `;
+  }
+  else {
+    // Round active, no current spinner — show slot machine
     html += `
       <div class="stage">
-        <div class="picker-label" style="text-align:center;margin-bottom:14px;">
-          ${available.length} TM${available.length !== 1 ? 's' : ''} remaining — Tap your name to spin
-        </div>
-        <div class="wheel-container">
-          <div class="wheel-pointer"></div>
-          ${buildWheel(previewWheel)}
-          <div class="wheel-center"></div>
-        </div>
-        <div class="picker-label" style="margin-top:20px;">Who's spinning?</div>
-        <div class="tm-grid">
-          ${available.map(tm => `
-            <button class="tm-btn" onclick="spinWheel('${tm.replace(/'/g, "\\'")}')">${tm}</button>
-          `).join('')}
+        <div class="stage-title">🎰 Slot Machine — Who Spins Next?</div>
+        <div class="stage-message">${available.length} TM${available.length !== 1 ? 's' : ''} remaining this round</div>
+        ${renderSlotMachine(available)}
+        <div class="remaining-list">
+          ${available.map(tm => `<span class="tm-chip">${tm}</span>`).join('')}
         </div>
       </div>
     `;
   }
   
+  // === CURRENT ROUND PAIRINGS ===
   if (currentPairs.length > 0) {
     html += `
       <div class="section-title">Round ${state.currentRound} Matchups</div>
@@ -575,6 +834,7 @@ function render() {
     `;
   }
   
+  // === HISTORY ===
   const rounds = Object.keys(state.pairings).filter(r => +r < state.currentRound).sort((a,b) => +a - +b);
   if (rounds.length > 0) {
     html += `
@@ -584,9 +844,7 @@ function render() {
           <div class="history-round">
             <div class="history-round-label">Round ${r}</div>
             <div class="history-pairings">
-              ${state.pairings[r].map(([a, b]) => `
-                <div class="history-pair">${a} vs ${b}</div>
-              `).join('')}
+              ${state.pairings[r].map(([a, b]) => `<div class="history-pair">${a} vs ${b}</div>`).join('')}
             </div>
           </div>
         `).join('')}
@@ -597,13 +855,23 @@ function render() {
   main.innerHTML = html;
 }
 
+// === ADMIN ===
 function openAdmin() {
+  const startActionBtn = state && !state.roundActive && (!state.pairings[state.currentRound] || state.pairings[state.currentRound].length < 8)
+    ? `<button class="modal-btn primary" onclick="adminAction('start-round')">▶ Start Round ${state.currentRound}</button>`
+    : '';
+  const advanceBtn = state && state.pairings[state.currentRound] && state.pairings[state.currentRound].length === 8 && state.currentRound < state.totalRounds
+    ? `<button class="modal-btn primary" onclick="adminAction('advance-round')">⏭ Advance to Round ${state.currentRound + 1}</button>`
+    : '';
+  
   document.getElementById('modal-root').innerHTML = `
     <div class="modal-bg" onclick="if(event.target===this)closeModal()">
       <div class="modal">
         <h2>⚙ Admin Panel</h2>
         <input type="password" id="admin-pwd" placeholder="Admin password" autofocus />
-        <button class="modal-btn" onclick="adminAction('advance-round')">⏭ Advance to next round</button>
+        ${startActionBtn}
+        ${advanceBtn}
+        <button class="modal-btn" onclick="adminAction('clear-spinner')">🔄 Clear stuck spinner</button>
         <button class="modal-btn" onclick="adminAction('reset-round')">↺ Reset current round</button>
         <button class="modal-btn" onclick="adminAction('reset-all')">⚠ Reset entire tournament</button>
         <button class="modal-btn" onclick="openEditNames()">✎ Edit TM names</button>
@@ -619,11 +887,13 @@ async function adminAction(action) {
   const pwd = document.getElementById('admin-pwd').value;
   if (!pwd) { alert('Enter admin password'); return; }
   const msgs = {
+    'start-round': null, // No confirm needed
     'advance-round': 'Advance to next round?',
     'reset-round': 'Reset current round?',
-    'reset-all': 'Reset ENTIRE tournament? This cannot be undone.'
+    'reset-all': 'Reset ENTIRE tournament? This cannot be undone.',
+    'clear-spinner': 'Clear the current spinner queue?'
   };
-  if (!confirm(msgs[action])) return;
+  if (msgs[action] && !confirm(msgs[action])) return;
   try {
     const r = await fetch(`/api/${action}`, {
       method: 'POST',
@@ -676,23 +946,6 @@ async function saveNames() {
     state = data;
     lastUpdate = state.lastUpdate;
     closeModal();
-    render();
-  } catch (e) { alert('Error: ' + e.message); }
-}
-
-async function advanceRound() {
-  const pwd = prompt('Admin password to advance round:');
-  if (!pwd) return;
-  try {
-    const r = await fetch('/api/advance-round', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ password: pwd })
-    });
-    const data = await r.json();
-    if (data.error) { alert(data.error); return; }
-    state = data;
-    lastUpdate = state.lastUpdate;
     render();
   } catch (e) { alert('Error: ' + e.message); }
 }
