@@ -1,1 +1,478 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TM Tournament Spinner</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+    background: #f5f4ef;
+    color: #1a1a1a;
+    min-height: 100vh;
+    padding: 16px;
+    line-height: 1.5;
+  }
+  .container { max-width: 720px; margin: 0 auto; }
+  .header {
+    display: flex; justify-content: space-between; align-items: center;
+    margin-bottom: 20px; flex-wrap: wrap; gap: 12px;
+  }
+  h1 { font-size: 20px; font-weight: 500; }
+  .round-badge {
+    background: #E6F1FB; color: #0C447C;
+    padding: 6px 14px; border-radius: 8px;
+    font-size: 14px; font-weight: 500;
+  }
+  .card {
+    background: #fff;
+    border: 0.5px solid rgba(0,0,0,0.15);
+    border-radius: 12px;
+    padding: 20px;
+    margin-bottom: 16px;
+  }
+  .card-secondary {
+    background: #ebe9e1;
+    border-radius: 12px;
+    padding: 20px;
+    margin-bottom: 16px;
+  }
+  .label {
+    font-size: 13px; color: #5f5e5a;
+    margin-bottom: 12px;
+  }
+  .tm-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+    gap: 8px;
+  }
+  button {
+    background: #fff;
+    border: 0.5px solid rgba(0,0,0,0.3);
+    border-radius: 8px;
+    padding: 12px 8px;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.15s;
+    font-family: inherit;
+    color: #1a1a1a;
+  }
+  button:hover:not(:disabled) {
+    background: #f5f4ef;
+    border-color: rgba(0,0,0,0.4);
+  }
+  button:active:not(:disabled) { transform: scale(0.98); }
+  button:disabled { opacity: 0.4; cursor: not-allowed; }
+  button.primary {
+    background: #1a1a1a; color: #fff; border-color: #1a1a1a;
+  }
+  button.primary:hover:not(:disabled) {
+    background: #333; border-color: #333;
+  }
+  button.small { font-size: 12px; padding: 6px 12px; }
+  .spin-result {
+    text-align: center; padding: 24px 0;
+  }
+  .spin-result .vs {
+    font-size: 13px; color: #5f5e5a; margin-bottom: 8px;
+  }
+  .spin-result .opponent {
+    font-size: 28px; font-weight: 500; color: #185FA5;
+    transition: all 0.1s;
+  }
+  .pairing {
+    background: #fff;
+    border: 0.5px solid rgba(0,0,0,0.15);
+    border-radius: 8px;
+    padding: 12px 14px;
+    font-size: 14px;
+    display: flex; justify-content: space-between; align-items: center;
+  }
+  .pairing .vs-text {
+    color: #888; font-size: 11px; padding: 0 8px;
+  }
+  .pairings-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 8px;
+  }
+  .success-banner {
+    background: #EAF3DE; color: #27500A;
+    padding: 14px 18px; border-radius: 12px;
+    font-size: 14px; font-weight: 500;
+    display: flex; justify-content: space-between; align-items: center;
+    flex-wrap: wrap; gap: 12px; margin-bottom: 16px;
+  }
+  .error {
+    background: #FCEBEB; color: #791F1F;
+    padding: 12px 16px; border-radius: 8px;
+    font-size: 13px; margin: 12px 0;
+  }
+  details { margin-bottom: 16px; }
+  summary {
+    cursor: pointer; font-size: 13px; color: #5f5e5a;
+    font-weight: 500; padding: 8px 0; list-style: none;
+  }
+  summary::before { content: '▸ '; }
+  details[open] summary::before { content: '▾ '; }
+  .history-round { margin-bottom: 12px; }
+  .history-round-label {
+    font-size: 12px; color: #888; margin-bottom: 6px;
+  }
+  .history-pairings {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 6px;
+  }
+  .history-pair {
+    font-size: 12px; padding: 8px 12px;
+    background: #ebe9e1; border-radius: 8px;
+  }
+  .admin-controls {
+    display: flex; gap: 8px; justify-content: flex-end;
+    margin-top: 20px; padding-top: 16px;
+    border-top: 0.5px solid rgba(0,0,0,0.15);
+    flex-wrap: wrap;
+  }
+  .modal-bg {
+    position: fixed; inset: 0; background: rgba(0,0,0,0.5);
+    display: flex; align-items: center; justify-content: center;
+    z-index: 100;
+  }
+  .modal {
+    background: #fff; border-radius: 12px; padding: 24px;
+    max-width: 90%; width: 400px;
+  }
+  .modal h2 { font-size: 16px; margin-bottom: 12px; }
+  input[type="password"], input[type="text"] {
+    width: 100%; padding: 10px 12px; border-radius: 8px;
+    border: 0.5px solid rgba(0,0,0,0.3); font-size: 14px;
+    font-family: inherit; margin-bottom: 12px;
+  }
+  .live-dot {
+    display: inline-block; width: 8px; height: 8px;
+    background: #1D9E75; border-radius: 50%; margin-right: 6px;
+    animation: pulse 2s infinite;
+  }
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.4; }
+  }
+  .live-status {
+    font-size: 12px; color: #5f5e5a;
+    text-align: center; margin-top: 8px;
+  }
+</style>
+</head>
+<body>
+<div class="container">
+  <div class="header">
+    <h1>TM Tournament Spinner</h1>
+    <div style="display:flex;gap:8px;align-items:center;">
+      <span style="font-size:13px;color:#5f5e5a;">Round</span>
+      <span class="round-badge" id="round-badge">1 / 8</span>
+    </div>
+  </div>
 
+  <div id="error-area"></div>
+  <div id="main-content"></div>
+
+  <div class="admin-controls">
+    <button class="small" onclick="openAdmin()">Admin</button>
+  </div>
+
+  <div class="live-status">
+    <span class="live-dot"></span>Live — auto-refreshes every 3s
+  </div>
+</div>
+
+<div id="modal-root"></div>
+
+<script>
+let state = null;
+let spinning = false;
+let lastUpdate = 0;
+
+async function fetchState() {
+  if (spinning) return;
+  try {
+    const r = await fetch('/api/state');
+    const newState = await r.json();
+    if (newState.lastUpdate !== lastUpdate) {
+      lastUpdate = newState.lastUpdate;
+      state = newState;
+      render();
+    }
+  } catch (e) { console.error(e); }
+}
+
+function showError(msg) {
+  document.getElementById('error-area').innerHTML =
+    `<div class="error">${msg}</div>`;
+  setTimeout(() => {
+    document.getElementById('error-area').innerHTML = '';
+  }, 4000);
+}
+
+async function spin(tm) {
+  if (spinning) return;
+  spinning = true;
+
+  const main = document.getElementById('main-content');
+  const available = state.tms.filter(t => !state.paired.includes(t));
+  const others = available.filter(p => p !== tm);
+
+  // Show animation
+  main.innerHTML = `
+    <div class="card-secondary">
+      <div class="spin-result">
+        <div class="vs">${tm} vs</div>
+        <div class="opponent" id="spin-display">...</div>
+      </div>
+    </div>
+  `;
+
+  let count = 0;
+  const interval = setInterval(() => {
+    document.getElementById('spin-display').textContent =
+      others[Math.floor(Math.random() * others.length)];
+    count++;
+  }, 80);
+
+  try {
+    const r = await fetch('/api/spin', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ spinner: tm })
+    });
+    const data = await r.json();
+
+    setTimeout(() => {
+      clearInterval(interval);
+      if (data.error) {
+        spinning = false;
+        showError(data.error);
+        fetchState();
+        return;
+      }
+      document.getElementById('spin-display').textContent = data.opponent;
+      setTimeout(() => {
+        spinning = false;
+        state = data.state;
+        lastUpdate = state.lastUpdate;
+        render();
+      }, 1500);
+    }, 1500);
+  } catch (e) {
+    clearInterval(interval);
+    spinning = false;
+    showError('Connection error. Try again.');
+  }
+}
+
+function render() {
+  if (!state) return;
+  document.getElementById('round-badge').textContent =
+    `${state.currentRound} / ${state.totalRounds}`;
+
+  const main = document.getElementById('main-content');
+  const available = state.tms.filter(t => !state.paired.includes(t));
+  const currentPairs = state.pairings[state.currentRound] || [];
+  const roundComplete = available.length === 0;
+  const tournamentComplete = state.currentRound === state.totalRounds && roundComplete;
+
+  let html = '';
+
+  // Spin area
+  if (!roundComplete) {
+    html += `
+      <div class="card-secondary">
+        <div class="label">Click your name to spin (${available.length} TMs left this round)</div>
+        <div class="tm-grid">
+          ${available.map(tm => `
+            <button onclick="spin('${tm.replace(/'/g, "\\'")}')">${tm}</button>
+          `).join('')}
+        </div>
+      </div>
+    `;
+  }
+
+  // Round complete banner
+  if (roundComplete && !tournamentComplete) {
+    html += `
+      <div class="success-banner">
+        <span>Round ${state.currentRound} complete!</span>
+        <button class="primary small" onclick="advanceRound()">Start Round ${state.currentRound + 1} →</button>
+      </div>
+    `;
+  }
+
+  if (tournamentComplete) {
+    html += `
+      <div class="success-banner" style="justify-content:center;">
+        🏆 Tournament complete! All 8 rounds finished.
+      </div>
+    `;
+  }
+
+  // Current pairings
+  if (currentPairs.length > 0) {
+    html += `
+      <div style="margin-bottom:20px;">
+        <div class="label" style="font-weight:500;">Round ${state.currentRound} pairings</div>
+        <div class="pairings-grid">
+          ${currentPairs.map(([a, b]) => `
+            <div class="pairing">
+              <span style="font-weight:500;">${a}</span>
+              <span class="vs-text">VS</span>
+              <span style="font-weight:500;">${b}</span>
+            </div>
+          `).join('')}
+        </div>
+      </div>
+    `;
+  }
+
+  // History
+  const rounds = Object.keys(state.pairings).sort((a, b) => +a - +b);
+  if (rounds.length > 0) {
+    html += `
+      <details>
+        <summary>View all rounds history</summary>
+        <div style="margin-top:8px;">
+          ${rounds.map(r => `
+            <div class="history-round">
+              <div class="history-round-label">Round ${r}</div>
+              <div class="history-pairings">
+                ${state.pairings[r].map(([a, b]) => `
+                  <div class="history-pair">${a} vs ${b}</div>
+                `).join('')}
+              </div>
+            </div>
+          `).join('')}
+        </div>
+      </details>
+    `;
+  }
+
+  main.innerHTML = html;
+}
+
+// Admin functions
+function openAdmin() {
+  const root = document.getElementById('modal-root');
+  root.innerHTML = `
+    <div class="modal-bg" onclick="if(event.target===this)closeModal()">
+      <div class="modal">
+        <h2>Admin controls</h2>
+        <input type="password" id="admin-pwd" placeholder="Admin password" />
+        <div style="display:flex;flex-direction:column;gap:8px;">
+          <button onclick="adminAction('advance-round')">Advance to next round</button>
+          <button onclick="adminAction('reset-round')">Reset current round</button>
+          <button onclick="adminAction('reset-all')">Reset entire tournament</button>
+          <button onclick="openEditNames()">Edit TM names</button>
+          <button onclick="closeModal()" style="margin-top:8px;">Close</button>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+function closeModal() {
+  document.getElementById('modal-root').innerHTML = '';
+}
+
+async function adminAction(action) {
+  const pwd = document.getElementById('admin-pwd').value;
+  if (!pwd) { alert('Enter admin password'); return; }
+
+  const confirmMsgs = {
+    'advance-round': 'Advance to the next round?',
+    'reset-round': 'Reset the current round?',
+    'reset-all': 'Reset the ENTIRE tournament? This cannot be undone.'
+  };
+  if (!confirm(confirmMsgs[action])) return;
+
+  try {
+    const r = await fetch(`/api/${action}`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ password: pwd })
+    });
+    const data = await r.json();
+    if (data.error) { alert(data.error); return; }
+    state = data;
+    lastUpdate = state.lastUpdate;
+    closeModal();
+    render();
+  } catch (e) { alert('Error: ' + e.message); }
+}
+
+function openEditNames() {
+  const root = document.getElementById('modal-root');
+  const pwd = document.getElementById('admin-pwd')?.value || '';
+  root.innerHTML = `
+    <div class="modal-bg" onclick="if(event.target===this)closeModal()">
+      <div class="modal">
+        <h2>Edit TM names (16 required)</h2>
+        <input type="password" id="admin-pwd2" placeholder="Admin password" value="${pwd}" />
+        ${state.tms.map((tm, i) => `
+          <input type="text" id="tm-${i}" value="${tm}" placeholder="TM ${i+1}" style="margin-bottom:6px;" />
+        `).join('')}
+        <div style="display:flex;gap:8px;margin-top:8px;">
+          <button class="primary" onclick="saveNames()">Save</button>
+          <button onclick="closeModal()">Cancel</button>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+async function saveNames() {
+  const pwd = document.getElementById('admin-pwd2').value;
+  if (!pwd) { alert('Enter admin password'); return; }
+  const tms = [];
+  for (let i = 0; i < 16; i++) {
+    const v = document.getElementById(`tm-${i}`).value.trim();
+    if (!v) { alert(`TM ${i+1} name is empty`); return; }
+    tms.push(v);
+  }
+  try {
+    const r = await fetch('/api/update-tms', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ password: pwd, tms })
+    });
+    const data = await r.json();
+    if (data.error) { alert(data.error); return; }
+    state = data;
+    lastUpdate = state.lastUpdate;
+    closeModal();
+    render();
+  } catch (e) { alert('Error: ' + e.message); }
+}
+
+async function advanceRound() {
+  const pwd = prompt('Admin password to advance round:');
+  if (!pwd) return;
+  try {
+    const r = await fetch('/api/advance-round', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ password: pwd })
+    });
+    const data = await r.json();
+    if (data.error) { alert(data.error); return; }
+    state = data;
+    lastUpdate = state.lastUpdate;
+    render();
+  } catch (e) { alert('Error: ' + e.message); }
+}
+
+// Boot
+fetchState();
+setInterval(fetchState, 3000);
+</script>
+</body>
+</html>
