@@ -112,6 +112,14 @@
     letter-spacing: 1px;
     border-bottom: 1px solid rgba(255,215,0,0.1);
   }
+  .slot-mystery {
+    font-size: 36px;
+    animation: mysteryPulse 1.4s ease-in-out infinite;
+  }
+  @keyframes mysteryPulse {
+    0%, 100% { opacity: 0.5; transform: scale(1); }
+    50% { opacity: 1; transform: scale(1.1); }
+  }
   .slot-window-frame {
     position: absolute; inset: 0;
     pointer-events: none;
@@ -740,16 +748,13 @@ function renderSpinStage(tm, others) {
 }
 
 function renderSlotMachine(eligible) {
-  // Build initial reel with a few random items so it doesn't look empty
-  let reelHtml = '';
-  for (let i = 0; i < 6; i++) {
-    const tm = eligible[Math.floor(Math.random() * eligible.length)];
-    reelHtml += `<div class="slot-item">${tm}</div>`;
-  }
+  // Pre-pull state: show only mystery symbols
   return `
     <div class="slot-machine">
       <div class="slot-window">
-        <div class="slot-reel" id="slot-reel">${reelHtml}</div>
+        <div class="slot-reel" id="slot-reel">
+          <div class="slot-item slot-mystery">❓</div>
+        </div>
         <div class="slot-window-frame"></div>
       </div>
       <button class="slot-pull-btn" id="slot-pull-btn" onclick="pullSlot()">🎰 Pull!</button>
