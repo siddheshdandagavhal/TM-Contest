@@ -1,895 +1,962 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8"/>
-<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>TL Sales Contest June'26</title>
-<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow+Condensed:wght@400;600;700&family=Barlow:wght@400;500;600&display=swap" rel="stylesheet"/>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TM Tournament — Slot & Wheel</title>
 <style>
-:root {
-  --gold: #e8b84b;
-  --gold-light: #f5d78e;
-  --dark: #0a0a0f;
-  --card-bg: #12121a;
-  --border: rgba(255,255,255,0.08);
-  --text: #e8e8f0;
-  --muted: #888899;
-  --radius: 12px;
-}
-* { box-sizing: border-box; margin: 0; padding: 0; }
-body {
-  background: var(--dark);
-  color: var(--text);
-  font-family: 'Barlow', sans-serif;
-  min-height: 100vh;
-  overflow-x: hidden;
-}
-body::before {
-  content: '';
-  position: fixed;
-  top: -50%; left: -50%;
-  width: 200%; height: 200%;
-  background: radial-gradient(ellipse at 30% 20%, rgba(232,184,75,0.04) 0%, transparent 50%),
-              radial-gradient(ellipse at 70% 80%, rgba(100,100,255,0.04) 0%, transparent 50%);
-  pointer-events: none;
-  z-index: 0;
-}
-.header {
-  background: linear-gradient(135deg, #0d0d1a 0%, #1a1a2e 100%);
-  border-bottom: 2px solid var(--gold);
-  padding: 0 24px;
-  position: sticky; top: 0; z-index: 100;
-}
-.header-inner {
-  max-width: 1200px;
-  margin: 0 auto;
-  display: flex; align-items: center; justify-content: space-between;
-  height: 64px;
-}
-.logo { font-family: 'Bebas Neue', cursive; font-size: 28px; letter-spacing: 3px; color: var(--gold); }
-.logo span { color: var(--text); }
-.admin-btn {
-  background: transparent; border: 1px solid var(--gold); color: var(--gold);
-  font-family: 'Barlow Condensed', sans-serif; font-size: 13px; letter-spacing: 2px;
-  text-transform: uppercase; padding: 6px 18px; border-radius: 4px;
-  cursor: pointer; transition: all 0.2s;
-}
-.admin-btn:hover { background: var(--gold); color: var(--dark); }
-.zone-tabs {
-  background: #0d0d1a; border-bottom: 1px solid var(--border);
-  display: flex; overflow-x: auto; scrollbar-width: none; padding: 0 24px;
-}
-.zone-tabs::-webkit-scrollbar { display: none; }
-.zone-tab {
-  font-family: 'Barlow Condensed', sans-serif; font-size: 15px; font-weight: 700;
-  letter-spacing: 1.5px; text-transform: uppercase; padding: 14px 28px;
-  cursor: pointer; white-space: nowrap; border-bottom: 3px solid transparent;
-  color: var(--muted); transition: all 0.2s; background: none;
-  border-top: none; border-left: none; border-right: none; outline: none;
-}
-.zone-tab:hover { color: var(--text); }
-.zone-tab.active[data-zone="north"] { color: #e8b84b; border-bottom-color: #e8b84b; }
-.zone-tab.active[data-zone="south"] { color: #52b788; border-bottom-color: #52b788; }
-.zone-tab.active[data-zone="vip"]   { color: #c77dff; border-bottom-color: #c77dff; }
-.zone-tab.active[data-zone="hvm"]   { color: #ff6b35; border-bottom-color: #ff6b35; }
-.zone-tab.active[data-zone="west"]  { color: #fcbf49; border-bottom-color: #fcbf49; }
-.tab-badge {
-  display: inline-block; font-size: 10px; padding: 1px 6px; border-radius: 20px;
-  margin-left: 6px; font-weight: 700; background: rgba(255,255,255,0.1);
-}
-.zone-panel { display: none; max-width: 1200px; margin: 0 auto; padding: 28px 24px; position: relative; z-index: 1; }
-.zone-panel.active { display: block; }
-.round-banner {
-  border-radius: var(--radius); padding: 20px 28px;
-  display: flex; align-items: center; justify-content: space-between;
-  margin-bottom: 28px; position: relative; overflow: hidden;
-}
-.round-banner::before {
-  content: ''; position: absolute; inset: 0; opacity: 0.12;
-  background: repeating-linear-gradient(45deg, transparent, transparent 10px, rgba(255,255,255,0.05) 10px, rgba(255,255,255,0.05) 20px);
-}
-.round-label { font-family: 'Bebas Neue', cursive; font-size: 42px; letter-spacing: 3px; line-height: 1; }
-.round-sub {
-  font-family: 'Barlow Condensed', sans-serif; font-size: 13px; letter-spacing: 2px;
-  text-transform: uppercase; opacity: 0.7; margin-top: 4px;
-}
-.round-prog { display: flex; gap: 6px; align-items: center; flex-wrap: wrap; max-width: 260px; justify-content: flex-end; }
-.prog-dot { width: 9px; height: 9px; border-radius: 50%; background: rgba(255,255,255,0.2); transition: background 0.3s; }
-.prog-dot.done { background: rgba(255,255,255,0.9); }
-.prog-dot.current { background: var(--gold); box-shadow: 0 0 8px var(--gold); }
-.locked-card {
-  background: var(--card-bg); border: 1px dashed var(--border); border-radius: var(--radius);
-  padding: 60px 20px; text-align: center; margin-bottom: 28px;
-}
-.locked-icon { font-size: 56px; margin-bottom: 16px; opacity: 0.5; }
-.locked-text { font-family: 'Bebas Neue', cursive; font-size: 26px; letter-spacing: 2px; margin-bottom: 8px; }
-.locked-sub { font-family: 'Barlow Condensed', sans-serif; font-size: 14px; letter-spacing: 1px; color: var(--muted); }
-.slot-section {
-  background: var(--card-bg); border: 1px solid var(--border); border-radius: var(--radius);
-  padding: 32px 24px; margin-bottom: 28px; text-align: center;
-}
-.slot-section-title { font-family: 'Bebas Neue', cursive; font-size: 24px; letter-spacing: 3px; margin-bottom: 4px; color: var(--gold); }
-.slot-section-sub { font-family: 'Barlow Condensed', sans-serif; font-size: 12px; letter-spacing: 2px; text-transform: uppercase; color: var(--muted); margin-bottom: 24px; }
-.slot-machine {
-  background: linear-gradient(180deg, #1a1a2e 0%, #0d0d1a 100%);
-  border: 3px solid var(--gold); border-radius: 16px; padding: 20px;
-  max-width: 500px; margin: 0 auto 24px;
-  box-shadow: 0 0 40px rgba(232,184,75,0.2), inset 0 0 30px rgba(0,0,0,0.5);
-}
-.slot-window {
-  background: #000; border-radius: 8px; height: 90px;
-  overflow: hidden; position: relative; border: 2px solid rgba(232,184,75,0.3);
-}
-.slot-window::before, .slot-window::after { content: ''; position: absolute; left: 0; right: 0; height: 30px; z-index: 2; pointer-events: none; }
-.slot-window::before { top: 0; background: linear-gradient(to bottom, #000, transparent); }
-.slot-window::after { bottom: 0; background: linear-gradient(to top, #000, transparent); }
-.slot-window-track { position: absolute; width: 100%; display: flex; flex-direction: column; align-items: center; top: 0; }
-.slot-window-item {
-  height: 90px; display: flex; align-items: center; justify-content: center;
-  font-family: 'Bebas Neue', cursive; font-size: 24px; letter-spacing: 1px;
-  color: var(--gold); width: 100%; flex-shrink: 0; text-align: center; padding: 0 8px;
-}
-.pull-btn {
-  background: linear-gradient(135deg, #d62828, #f77f00); color: #fff;
-  border: 3px solid #ffba08; border-radius: 50%; width: 100px; height: 100px;
-  font-family: 'Bebas Neue', cursive; font-size: 22px; letter-spacing: 2px;
-  cursor: pointer; margin-top: 20px;
-  box-shadow: 0 6px 20px rgba(214,40,40,0.4), inset 0 -4px 10px rgba(0,0,0,0.3);
-  transition: all 0.2s;
-}
-.pull-btn:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(214,40,40,0.6); }
-.pull-btn:active:not(:disabled) { transform: translateY(2px); }
-.pull-btn:disabled { opacity: 0.5; cursor: not-allowed; }
-.upnext-card {
-  background: linear-gradient(135deg, rgba(232,184,75,0.2), rgba(232,184,75,0.05));
-  border: 2px solid var(--gold); border-radius: var(--radius);
-  padding: 28px 24px; margin-bottom: 28px; text-align: center;
-  box-shadow: 0 0 30px rgba(232,184,75,0.2);
-  animation: glowPulse 2s ease-in-out infinite;
-}
-@keyframes glowPulse {
-  0%, 100% { box-shadow: 0 0 30px rgba(232,184,75,0.2); }
-  50% { box-shadow: 0 0 50px rgba(232,184,75,0.4); }
-}
-.upnext-label { font-family: 'Barlow Condensed', sans-serif; font-size: 13px; letter-spacing: 4px; text-transform: uppercase; color: var(--gold); margin-bottom: 8px; }
-.upnext-name { font-family: 'Bebas Neue', cursive; font-size: 38px; letter-spacing: 2px; margin-bottom: 20px; }
-.spin-wheel-btn {
-  background: linear-gradient(135deg, var(--gold), var(--gold-light)); color: #1a1a2e;
-  border: none; padding: 14px 36px; font-family: 'Bebas Neue', cursive;
-  font-size: 20px; letter-spacing: 3px; border-radius: 8px; cursor: pointer;
-  transition: all 0.2s; box-shadow: 0 4px 16px rgba(232,184,75,0.3);
-}
-.spin-wheel-btn:hover:not(:disabled) { transform: translateY(-1px); box-shadow: 0 6px 24px rgba(232,184,75,0.5); }
-.spin-wheel-btn:disabled { opacity: 0.5; cursor: not-allowed; }
-.wheel-container { position: relative; width: 360px; height: 360px; margin: 0 auto; }
-.wheel-svg { width: 100%; height: 100%; filter: drop-shadow(0 0 30px rgba(232,184,75,0.3)); }
-.wheel-rotor { transform-origin: 50% 50%; transition: transform 4.5s cubic-bezier(0.17, 0.67, 0.21, 0.98); }
-.wheel-pointer {
-  position: absolute; top: -8px; left: 50%; transform: translateX(-50%);
-  width: 0; height: 0; border-left: 14px solid transparent; border-right: 14px solid transparent;
-  border-top: 26px solid var(--gold);
-  filter: drop-shadow(0 2px 4px rgba(0,0,0,0.5)); z-index: 10;
-}
-.wheel-center {
-  position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
-  width: 60px; height: 60px; background: linear-gradient(135deg, var(--gold), #b8860b);
-  border-radius: 50%; border: 4px solid #1a1a2e;
-  display: flex; align-items: center; justify-content: center;
-  font-family: 'Bebas Neue', cursive; font-size: 14px; color: #1a1a2e; z-index: 5;
-}
-.section-title {
-  font-family: 'Barlow Condensed', sans-serif; font-size: 13px; letter-spacing: 3px;
-  text-transform: uppercase; color: var(--muted); margin-bottom: 14px;
-}
-.tl-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 10px; margin-bottom: 28px; }
-.tl-card {
-  background: var(--card-bg); border: 1px solid var(--border); border-radius: 10px;
-  padding: 10px 14px; transition: all 0.2s; position: relative; overflow: hidden;
-}
-.tl-card::before { content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 3px; }
-.tl-card.paired { opacity: 0.4; }
-.tl-card.upnext { border-color: var(--gold); background: rgba(232,184,75,0.08); box-shadow: 0 0 12px rgba(232,184,75,0.3); }
-.tl-name { font-family: 'Barlow Condensed', sans-serif; font-size: 13px; font-weight: 700; line-height: 1.2; }
-.tl-status { font-size: 9px; letter-spacing: 1px; text-transform: uppercase; margin-top: 3px; opacity: 0.6; }
-[data-zone="north"] .tl-card::before { background: #e8b84b; }
-[data-zone="south"] .tl-card::before { background: #52b788; }
-[data-zone="vip"]   .tl-card::before { background: #c77dff; }
-[data-zone="hvm"]   .tl-card::before { background: #ff6b35; }
-[data-zone="west"]  .tl-card::before { background: #fcbf49; }
-.pairings-list { display: flex; flex-direction: column; gap: 10px; }
-.pairing-card {
-  background: var(--card-bg); border: 1px solid var(--border); border-radius: 10px;
-  padding: 14px 18px; display: flex; align-items: center; gap: 14px;
-  font-family: 'Barlow Condensed', sans-serif; animation: slideIn 0.4s ease;
-}
-@keyframes slideIn { from { opacity: 0; transform: translateX(-10px); } to { opacity: 1; transform: translateX(0); } }
-.pair-num { font-size: 11px; letter-spacing: 2px; text-transform: uppercase; color: var(--muted); min-width: 32px; }
-.pair-tl { font-size: 16px; font-weight: 700; flex: 1; }
-.pair-vs { font-size: 12px; color: var(--muted); letter-spacing: 2px; padding: 0 8px; }
-.pair-tl.right { text-align: right; flex: 1; }
-.pair-repeat {
-  font-size: 9px; color: #ff8a65; letter-spacing: 1px; text-transform: uppercase;
-  margin-left: 8px; padding: 2px 6px; border: 1px solid #ff8a65; border-radius: 3px;
-}
-.past-rounds-wrap { display: flex; flex-direction: column; gap: 8px; }
-.past-round { background: var(--card-bg); border: 1px solid var(--border); border-radius: 10px; overflow: hidden; transition: border-color 0.2s; }
-.past-round[open] { border-color: rgba(232,184,75,0.3); }
-.past-round-summary {
-  list-style: none; cursor: pointer; padding: 14px 18px;
-  display: flex; align-items: center; gap: 12px;
-  font-family: 'Barlow Condensed', sans-serif; user-select: none; transition: background 0.15s;
-}
-.past-round-summary::-webkit-details-marker { display: none; }
-.past-round-summary:hover { background: rgba(255,255,255,0.03); }
-.past-round-title { font-size: 16px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: var(--gold); flex: 1; }
-.past-round-meta { font-size: 11px; letter-spacing: 1.5px; text-transform: uppercase; color: var(--muted); }
-.past-round-chevron { color: var(--muted); font-size: 14px; transition: transform 0.2s; margin-left: 8px; }
-.past-round[open] .past-round-chevron { transform: rotate(180deg); }
-.past-round-body { padding: 0 14px 14px 14px; display: flex; flex-direction: column; gap: 8px; border-top: 1px solid var(--border); padding-top: 12px; }
-.complete-card {
-  background: linear-gradient(135deg, rgba(82,183,136,0.15), rgba(82,183,136,0.05));
-  border: 2px solid #52b788; border-radius: var(--radius);
-  padding: 32px 20px; text-align: center; margin-bottom: 28px;
-}
-.complete-icon { font-size: 48px; margin-bottom: 12px; }
-.complete-text { font-family: 'Bebas Neue', cursive; font-size: 28px; letter-spacing: 2px; color: #52b788; margin-bottom: 8px; }
-.complete-sub { font-family: 'Barlow Condensed', sans-serif; font-size: 14px; letter-spacing: 1px; color: var(--muted); }
-.modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.85); backdrop-filter: blur(8px); z-index: 500; align-items: center; justify-content: center; }
-.modal-overlay.open { display: flex; }
-.admin-modal { background: var(--card-bg); border: 1px solid var(--border); border-radius: 20px; padding: 32px; max-width: 560px; width: 90%; max-height: 85vh; overflow-y: auto; }
-.modal-close { position: absolute; top: 16px; right: 16px; background: none; border: none; color: var(--muted); font-size: 22px; cursor: pointer; }
-.admin-title { font-family: 'Bebas Neue', cursive; font-size: 26px; letter-spacing: 2px; margin-bottom: 20px; color: var(--gold); }
-.admin-section { margin-bottom: 24px; }
-.admin-section-title {
-  font-family: 'Barlow Condensed', sans-serif; font-size: 12px; letter-spacing: 2px;
-  text-transform: uppercase; color: var(--muted); margin-bottom: 12px;
-  padding-bottom: 6px; border-bottom: 1px solid var(--border);
-}
-.pw-input, .zone-select {
-  background: rgba(255,255,255,0.06); border: 1px solid var(--border); color: var(--text);
-  border-radius: 8px; padding: 10px 14px; font-size: 14px; font-family: 'Barlow', sans-serif;
-  outline: none; width: 100%; margin-bottom: 12px;
-}
-.pw-input:focus, .zone-select:focus { border-color: var(--gold); }
-.zone-select option { background: #1a1a2e; color: #e8e8f0; }
-.admin-row { display: flex; gap: 8px; align-items: center; margin-bottom: 8px; }
-.admin-row .zone-select { margin-bottom: 0; flex: 1; }
-.admin-action-btn {
-  padding: 8px 18px; border-radius: 8px; font-family: 'Barlow Condensed', sans-serif;
-  font-size: 13px; letter-spacing: 1px; text-transform: uppercase; cursor: pointer;
-  border: 1px solid var(--gold); color: var(--gold); background: transparent;
-  transition: all 0.2s; white-space: nowrap;
-}
-.admin-action-btn:hover { background: var(--gold); color: var(--dark); }
-.admin-action-btn.danger { border-color: #ff4d4f; color: #ff4d4f; }
-.admin-action-btn.danger:hover { background: #ff4d4f; color: #fff; }
-.admin-action-btn.success { border-color: #52b788; color: #52b788; }
-.admin-action-btn.success:hover { background: #52b788; color: #fff; }
-.toast {
-  position: fixed; bottom: 28px; right: 28px;
-  background: var(--card-bg); border: 1px solid var(--gold); border-radius: 10px;
-  padding: 12px 20px; font-family: 'Barlow Condensed', sans-serif;
-  font-size: 15px; letter-spacing: 1px; z-index: 999;
-  transform: translateY(80px); opacity: 0; transition: all 0.3s ease; max-width: 360px;
-}
-.toast.show { transform: translateY(0); opacity: 1; }
-.conn-status {
-  position: fixed; top: 8px; right: 24px;
-  font-family: 'Barlow Condensed', sans-serif; font-size: 10px; letter-spacing: 1px;
-  text-transform: uppercase; color: var(--muted); z-index: 99;
-}
-.conn-status.error { color: #ff4d4f; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+    background: radial-gradient(ellipse at top, #1a1f3a 0%, #0a0e1f 100%);
+    color: #f5f4ef; min-height: 100vh; padding: 16px;
+    line-height: 1.5; overflow-x: hidden;
+  }
+  .container { max-width: 760px; margin: 0 auto; }
+  
+  .header { text-align: center; margin-bottom: 20px; padding-top: 8px; }
+  h1 {
+    font-size: 26px; font-weight: 700;
+    background: linear-gradient(135deg, #ffd700 0%, #ffa500 50%, #ff6b35 100%);
+    -webkit-background-clip: text; background-clip: text;
+    -webkit-text-fill-color: transparent;
+    letter-spacing: 1px; margin-bottom: 6px;
+  }
+  .subtitle { font-size: 13px; color: #8a8db5; letter-spacing: 2px; text-transform: uppercase; }
+  
+  .round-bar {
+    display: flex; justify-content: center; align-items: center;
+    gap: 8px; margin-bottom: 20px; flex-wrap: wrap;
+  }
+  .round-pill {
+    padding: 6px 14px; border-radius: 20px;
+    font-size: 12px; font-weight: 600;
+    background: rgba(255,255,255,0.08);
+    border: 1px solid rgba(255,255,255,0.15);
+    color: #c0c4e0;
+  }
+  .round-pill.active {
+    background: linear-gradient(135deg, #ffd700, #ffa500);
+    color: #1a1f3a; border-color: #ffd700;
+    box-shadow: 0 0 16px rgba(255,215,0,0.4);
+  }
+  .round-pill.done {
+    background: rgba(72, 187, 120, 0.2);
+    border-color: rgba(72, 187, 120, 0.4); color: #68d391;
+  }
+  
+  .stage {
+    background: linear-gradient(180deg, rgba(255,255,255,0.03) 0%, rgba(255,255,255,0.01) 100%);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 20px; padding: 24px 20px; margin-bottom: 20px;
+  }
+  
+  .stage-title {
+    text-align: center; font-size: 12px;
+    color: #ffd700; text-transform: uppercase;
+    letter-spacing: 2px; font-weight: 700;
+    margin-bottom: 16px;
+  }
+  
+  .stage-message {
+    text-align: center; font-size: 14px;
+    color: #c0c4e0; margin-bottom: 16px;
+  }
+  .stage-message strong { color: #ffd700; font-weight: 600; }
+  
+  /* === SLOT MACHINE === */
+  .slot-machine {
+    background: linear-gradient(180deg, #2a2540 0%, #1a1530 100%);
+    border: 4px solid #b8860b;
+    border-radius: 16px;
+    padding: 20px;
+    max-width: 400px;
+    margin: 0 auto 20px;
+    box-shadow: 
+      0 0 0 4px #1a1f3a,
+      0 0 0 6px #b8860b,
+      0 12px 32px rgba(0,0,0,0.5),
+      inset 0 0 30px rgba(0,0,0,0.4);
+    position: relative;
+  }
+  .slot-machine::before {
+    content: '★ ★ ★';
+    position: absolute; top: 8px; left: 50%;
+    transform: translateX(-50%);
+    color: #ffd700; font-size: 12px;
+    letter-spacing: 8px;
+  }
+  .slot-window {
+    background: #0a0e1f;
+    border: 3px solid #ffd700;
+    border-radius: 8px;
+    height: 70px;
+    overflow: hidden;
+    position: relative;
+    margin: 16px 0;
+    box-shadow: inset 0 4px 12px rgba(0,0,0,0.6);
+  }
+  .slot-reel {
+    position: absolute; top: 0; left: 0; right: 0;
+    transition: transform 0s linear;
+  }
+  .slot-item {
+    height: 70px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 22px;
+    font-weight: 700;
+    color: #ffd700;
+    text-shadow: 0 0 12px rgba(255,215,0,0.5);
+    letter-spacing: 1px;
+    border-bottom: 1px solid rgba(255,215,0,0.1);
+  }
+  .slot-mystery {
+    font-size: 36px;
+    animation: mysteryPulse 1.4s ease-in-out infinite;
+  }
+  @keyframes mysteryPulse {
+    0%, 100% { opacity: 0.5; transform: scale(1); }
+    50% { opacity: 1; transform: scale(1.1); }
+  }
+  .slot-window-frame {
+    position: absolute; inset: 0;
+    pointer-events: none;
+    background: linear-gradient(
+      180deg,
+      rgba(10,14,31,0.7) 0%,
+      transparent 30%,
+      transparent 70%,
+      rgba(10,14,31,0.7) 100%
+    );
+  }
+  .slot-pull-btn {
+    background: linear-gradient(135deg, #e63946, #c1121f);
+    border: 3px solid #8b1525;
+    color: #fff;
+    padding: 14px 32px;
+    font-size: 16px;
+    font-weight: 800;
+    border-radius: 50px;
+    cursor: pointer;
+    text-transform: uppercase;
+    letter-spacing: 3px;
+    box-shadow: 
+      0 6px 0 #8b1525,
+      0 8px 16px rgba(0,0,0,0.4);
+    transition: all 0.1s;
+    font-family: inherit;
+    width: 100%;
+    max-width: 240px;
+    display: block;
+    margin: 0 auto;
+  }
+  .slot-pull-btn:hover:not(:disabled) {
+    transform: translateY(2px);
+    box-shadow: 0 4px 0 #8b1525, 0 6px 12px rgba(0,0,0,0.4);
+  }
+  .slot-pull-btn:active:not(:disabled) {
+    transform: translateY(6px);
+    box-shadow: 0 0 0 #8b1525, 0 2px 6px rgba(0,0,0,0.4);
+  }
+  .slot-pull-btn:disabled {
+    opacity: 0.5; cursor: not-allowed;
+    background: #555; border-color: #333;
+    box-shadow: 0 6px 0 #333;
+  }
+  
+  /* === FORTUNE WHEEL === */
+  .wheel-container {
+    position: relative; width: 100%; max-width: 460px;
+    margin: 0 auto 20px; aspect-ratio: 1;
+  }
+  .wheel-svg {
+    width: 100%; height: 100%;
+    transition: transform 5s cubic-bezier(0.17, 0.67, 0.16, 0.99);
+    filter: drop-shadow(0 8px 32px rgba(0,0,0,0.5));
+  }
+  .wheel-pointer {
+    position: absolute; top: -6px; left: 50%;
+    transform: translateX(-50%);
+    width: 0; height: 0;
+    border-left: 18px solid transparent;
+    border-right: 18px solid transparent;
+    border-top: 32px solid #ffd700;
+    filter: drop-shadow(0 4px 8px rgba(0,0,0,0.4));
+    z-index: 10;
+  }
+  .wheel-center {
+    position: absolute; top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    width: 14%; height: 14%;
+    border-radius: 50%;
+    background: radial-gradient(circle at 30% 30%, #ffeb88, #ffd700 50%, #b8860b);
+    border: 3px solid #8b6914; z-index: 5;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.4), inset 0 -4px 8px rgba(0,0,0,0.2);
+  }
+  
+  /* === NAME-CONFIRM (the chosen spinner) === */
+  .chosen-spinner-card {
+    background: linear-gradient(135deg, rgba(255,215,0,0.15), rgba(255,165,0,0.08));
+    border: 2px solid #ffd700;
+    border-radius: 16px;
+    padding: 20px;
+    text-align: center;
+    margin-bottom: 16px;
+    box-shadow: 0 0 24px rgba(255,215,0,0.2);
+  }
+  .chosen-label {
+    font-size: 11px; color: #ffd700;
+    text-transform: uppercase; letter-spacing: 3px;
+    margin-bottom: 8px; font-weight: 700;
+  }
+  .chosen-name {
+    font-size: 32px; font-weight: 800;
+    color: #fff;
+    margin-bottom: 12px;
+    letter-spacing: 1px;
+  }
+  .chosen-prompt {
+    font-size: 13px; color: #c0c4e0; margin-bottom: 12px;
+  }
+  .spin-action-btn {
+    background: linear-gradient(135deg, #ff6b35, #ff8e3c);
+    border: none; color: #fff;
+    padding: 14px 32px; font-size: 14px;
+    font-weight: 700; border-radius: 50px;
+    cursor: pointer;
+    text-transform: uppercase; letter-spacing: 2px;
+    box-shadow: 0 6px 20px rgba(255,107,53,0.4);
+    font-family: inherit;
+  }
+  .spin-action-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 28px rgba(255,107,53,0.6); }
+  
+  /* === RESULT REVEAL === */
+  .result-overlay {
+    position: fixed; inset: 0;
+    background: rgba(0,0,0,0.85);
+    display: flex; align-items: center; justify-content: center;
+    z-index: 1000; opacity: 0; pointer-events: none;
+    transition: opacity 0.4s;
+  }
+  .result-overlay.show { opacity: 1; pointer-events: auto; }
+  .result-card {
+    background: linear-gradient(135deg, #1a1f3a, #2d3561);
+    border: 2px solid #ffd700; border-radius: 20px;
+    padding: 40px 32px; text-align: center;
+    max-width: 90%; width: 400px;
+    box-shadow: 0 0 60px rgba(255,215,0,0.4);
+    transform: scale(0.7);
+    transition: transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+  .result-overlay.show .result-card { transform: scale(1); }
+  .result-label {
+    font-size: 12px; color: #ffd700;
+    text-transform: uppercase; letter-spacing: 3px; margin-bottom: 8px;
+  }
+  .result-vs { font-size: 14px; color: #c0c4e0; margin-bottom: 16px; }
+  .result-spinner { color: #ffd700; font-weight: 600; }
+  .result-opponent {
+    font-size: 36px; font-weight: 700;
+    background: linear-gradient(135deg, #ffd700, #ffa500);
+    -webkit-background-clip: text; background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin: 16px 0 24px; letter-spacing: 1px;
+  }
+  .result-close {
+    background: rgba(255,215,0,0.2); border: 1px solid #ffd700;
+    color: #ffd700; padding: 10px 24px;
+    border-radius: 24px; font-size: 13px; font-weight: 600;
+    cursor: pointer; text-transform: uppercase; letter-spacing: 1.5px;
+    font-family: inherit;
+  }
+  
+  /* === PAIRINGS DISPLAY === */
+  .section-title {
+    font-size: 12px; color: #ffd700;
+    text-transform: uppercase; letter-spacing: 2px;
+    margin-bottom: 12px; font-weight: 600;
+  }
+  .pairings-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 8px; margin-bottom: 20px;
+  }
+  .pairing {
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 10px; padding: 12px 14px;
+    display: flex; justify-content: space-between; align-items: center;
+    font-size: 13px;
+  }
+  .pairing-name { font-weight: 600; color: #f5f4ef; }
+  .pairing-vs {
+    font-size: 10px; color: #ffd700;
+    background: rgba(255,215,0,0.15);
+    padding: 2px 8px; border-radius: 8px;
+    font-weight: 700; letter-spacing: 1px;
+  }
+  
+  /* === REMAINING TM CHIPS === */
+  .remaining-list {
+    display: flex; flex-wrap: wrap; gap: 6px;
+    justify-content: center; margin-top: 12px;
+  }
+  .tm-chip {
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.15);
+    color: #c0c4e0;
+    padding: 4px 10px;
+    border-radius: 12px;
+    font-size: 11px;
+    font-weight: 500;
+  }
+  
+  /* === BANNERS === */
+  .complete-banner, .waiting-banner {
+    border-radius: 14px; padding: 20px;
+    margin-bottom: 16px; text-align: center;
+  }
+  .complete-banner {
+    background: linear-gradient(135deg, rgba(72,187,120,0.2), rgba(72,187,120,0.1));
+    border: 1px solid rgba(72,187,120,0.4);
+  }
+  .complete-banner .label { color: #68d391; font-weight: 600; font-size: 14px; }
+  .waiting-banner {
+    background: linear-gradient(135deg, rgba(255,165,0,0.15), rgba(255,107,53,0.08));
+    border: 1px solid rgba(255,165,0,0.4);
+  }
+  .waiting-banner .icon { font-size: 32px; margin-bottom: 8px; }
+  .waiting-banner .title {
+    color: #ffd700; font-size: 16px; font-weight: 700;
+    margin-bottom: 4px; text-transform: uppercase; letter-spacing: 1px;
+  }
+  .waiting-banner .desc { color: #c0c4e0; font-size: 13px; }
+  
+  .tournament-done {
+    background: linear-gradient(135deg, #ffd700, #ff6b35);
+    color: #1a1f3a; text-align: center;
+    padding: 28px 20px; border-radius: 20px; margin-bottom: 16px;
+    font-weight: 700; font-size: 18px; letter-spacing: 1px;
+  }
+  
+  /* === HISTORY === */
+  details {
+    margin-bottom: 16px;
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 14px; padding: 12px 16px;
+  }
+  summary {
+    cursor: pointer; font-size: 13px;
+    color: #c0c4e0; font-weight: 500;
+    list-style: none; user-select: none;
+  }
+  summary::before { content: '▸ '; color: #ffd700; }
+  details[open] summary::before { content: '▾ '; }
+  .history-round { margin: 12px 0; }
+  .history-round-label {
+    font-size: 11px; color: #ffd700; margin-bottom: 6px;
+    text-transform: uppercase; letter-spacing: 1.5px; font-weight: 600;
+  }
+  .history-pairings {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 6px;
+  }
+  .history-pair {
+    font-size: 12px; padding: 8px 12px;
+    background: rgba(255,255,255,0.04);
+    border-radius: 8px; border-left: 2px solid #ffd700;
+    color: #c0c4e0;
+  }
+  
+  /* === ADMIN === */
+  .admin-bar {
+    display: flex; justify-content: center; gap: 8px;
+    margin-top: 24px; padding-top: 16px;
+    border-top: 1px solid rgba(255,255,255,0.08);
+  }
+  .admin-btn {
+    background: transparent;
+    border: 1px solid rgba(255,255,255,0.2);
+    color: #8a8db5; padding: 6px 14px;
+    border-radius: 16px; font-size: 11px;
+    cursor: pointer; font-family: inherit;
+    text-transform: uppercase; letter-spacing: 1px;
+  }
+  .admin-btn:hover { background: rgba(255,255,255,0.05); color: #f5f4ef; }
+  
+  .live-status { text-align: center; font-size: 11px; color: #5f6291; margin-top: 8px; }
+  .live-dot {
+    display: inline-block; width: 6px; height: 6px;
+    background: #48bb78; border-radius: 50%;
+    margin-right: 6px; animation: pulse 2s infinite; vertical-align: middle;
+  }
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.3; }
+  }
+  
+  .error {
+    background: rgba(245, 101, 101, 0.15);
+    border: 1px solid rgba(245, 101, 101, 0.4);
+    color: #fc8181; padding: 12px 16px;
+    border-radius: 10px; font-size: 13px;
+    margin-bottom: 12px; text-align: center;
+  }
+  
+  /* === MODAL === */
+  .modal-bg {
+    position: fixed; inset: 0;
+    background: rgba(0,0,0,0.8);
+    display: flex; align-items: center; justify-content: center;
+    z-index: 100; padding: 16px;
+  }
+  .modal {
+    background: #1a1f3a;
+    border: 1px solid rgba(255,215,0,0.3);
+    border-radius: 16px; padding: 24px;
+    max-width: 100%; width: 420px;
+    max-height: 90vh; overflow-y: auto;
+  }
+  .modal h2 {
+    font-size: 16px; margin-bottom: 16px;
+    color: #ffd700; letter-spacing: 1px;
+  }
+  .modal input {
+    width: 100%; padding: 10px 12px;
+    border-radius: 8px;
+    border: 1px solid rgba(255,255,255,0.15);
+    background: rgba(255,255,255,0.05);
+    color: #f5f4ef; font-size: 14px;
+    font-family: inherit; margin-bottom: 8px;
+  }
+  .modal input:focus { outline: none; border-color: #ffd700; }
+  .modal-btn {
+    background: rgba(255,255,255,0.08);
+    border: 1px solid rgba(255,255,255,0.2);
+    color: #f5f4ef; padding: 10px 16px;
+    border-radius: 8px; cursor: pointer;
+    font-family: inherit; font-size: 13px;
+    width: 100%; margin-bottom: 6px;
+  }
+  .modal-btn:hover { background: rgba(255,215,0,0.15); border-color: #ffd700; }
+  .modal-btn.primary {
+    background: linear-gradient(135deg, #ffd700, #ffa500);
+    color: #1a1f3a; font-weight: 700; border-color: #ffd700;
+  }
+  
+  .confetti {
+    position: fixed; width: 10px; height: 10px;
+    pointer-events: none; z-index: 999;
+    animation: confettiFall 3s ease-out forwards;
+  }
+  @keyframes confettiFall {
+    0% { transform: translateY(-20px) rotate(0deg); opacity: 1; }
+    100% { transform: translateY(100vh) rotate(720deg); opacity: 0; }
+  }
+  
+  @media (max-width: 480px) {
+    h1 { font-size: 22px; }
+    .stage { padding: 16px 12px; }
+    .result-opponent, .chosen-name { font-size: 26px; }
+  }
 </style>
 </head>
 <body>
-
-<div class="conn-status" id="connStatus">● Connected</div>
-
-<header class="header">
-  <div class="header-inner">
-    <div class="logo">TL <span>Sales Contest</span> June'26</div>
+<div class="container">
+  <div class="header">
+    <h1>🎰 TM Tournament</h1>
+    <div class="subtitle">Slot &amp; Wheel of Fate</div>
+  </div>
+  
+  <div class="round-bar" id="round-bar"></div>
+  
+  <div id="error-area"></div>
+  <div id="main-content"></div>
+  
+  <div class="admin-bar">
     <button class="admin-btn" onclick="openAdmin()">⚙ Admin</button>
   </div>
-</header>
-
-<div class="zone-tabs">
-  <button class="zone-tab active" data-zone="north" onclick="switchZone('north')">North <span class="tab-badge" id="badge-north">16</span></button>
-  <button class="zone-tab" data-zone="south" onclick="switchZone('south')">South <span class="tab-badge" id="badge-south">14</span></button>
-  <button class="zone-tab" data-zone="vip" onclick="switchZone('vip')">VIP India &amp; Intl <span class="tab-badge" id="badge-vip">10</span></button>
-  <button class="zone-tab" data-zone="hvm" onclick="switchZone('hvm')">HVM Thane <span class="tab-badge" id="badge-hvm">12</span></button>
-  <button class="zone-tab" data-zone="west" onclick="switchZone('west')">West &amp; East <span class="tab-badge" id="badge-west">14</span></button>
-</div>
-
-<div id="panel-north" class="zone-panel active" data-zone="north"></div>
-<div id="panel-south" class="zone-panel" data-zone="south"></div>
-<div id="panel-vip"   class="zone-panel" data-zone="vip"></div>
-<div id="panel-hvm"   class="zone-panel" data-zone="hvm"></div>
-<div id="panel-west"  class="zone-panel" data-zone="west"></div>
-
-<div class="modal-overlay" id="adminModal">
-  <div class="admin-modal" style="position:relative">
-    <button class="modal-close" onclick="closeAdmin()">✕</button>
-    <div class="admin-title">⚙ Admin Controls</div>
-    <div class="admin-section">
-      <div class="admin-section-title">Admin Password</div>
-      <input class="pw-input" type="password" id="adminPw" placeholder="Enter admin password"/>
-    </div>
-    <div class="admin-section">
-      <div class="admin-section-title">Round Control</div>
-      <div class="admin-row">
-        <select class="zone-select" id="ctrlZone">
-          <option value="north">North</option>
-          <option value="south">South</option>
-          <option value="vip">VIP India &amp; Intl</option>
-          <option value="hvm">HVM Thane</option>
-          <option value="west">West &amp; East</option>
-        </select>
-      </div>
-      <div class="admin-row" style="gap:6px">
-        <button class="admin-action-btn success" style="flex:1" onclick="startRound()">▶ Start Round</button>
-        <button class="admin-action-btn" style="flex:1" onclick="advanceRound()">⏭ Next Round</button>
-      </div>
-      <div class="admin-row" style="margin-top:6px">
-        <button class="admin-action-btn" style="flex:1;font-size:11px" onclick="clearSpinner()">🧹 Clear Stuck Spinner</button>
-      </div>
-    </div>
-    <div class="admin-section">
-      <div class="admin-section-title">Reset</div>
-      <div class="admin-row">
-        <select class="zone-select" id="resetZone">
-          <option value="north">North</option>
-          <option value="south">South</option>
-          <option value="vip">VIP India &amp; Intl</option>
-          <option value="hvm">HVM Thane</option>
-          <option value="west">West &amp; East</option>
-        </select>
-      </div>
-      <div class="admin-row" style="gap:6px">
-        <button class="admin-action-btn" style="flex:1;font-size:12px" onclick="adminResetRound()">🔄 Reset Current Round</button>
-        <button class="admin-action-btn danger" style="flex:1;font-size:12px" onclick="resetZone()">⚠ Reset Whole Zone</button>
-      </div>
-      <button class="admin-action-btn danger" style="width:100%;margin-top:6px" onclick="resetAll()">⚠ Reset ALL Zones</button>
-    </div>
+  
+  <div class="live-status">
+    <span class="live-dot"></span>Live — auto-refreshes every 3s
   </div>
 </div>
 
-<div class="toast" id="toast"></div>
+<div class="result-overlay" id="result-overlay">
+  <div class="result-card">
+    <div class="result-label">★ Destiny Has Spoken ★</div>
+    <div class="result-vs"><span class="result-spinner" id="result-spinner-name"></span> faces</div>
+    <div class="result-opponent" id="result-opponent-name">—</div>
+    <button class="result-close" onclick="closeResult()">Continue</button>
+  </div>
+</div>
+
+<div id="modal-root"></div>
 
 <script>
-const ZONE_META = {
-  north: { name: 'North', color: '#1a3a6b', accent: '#e8b84b' },
-  south: { name: 'South', color: '#1b4332', accent: '#52b788' },
-  vip:   { name: 'VIP India & Intl', color: '#4a1942', accent: '#c77dff' },
-  hvm:   { name: 'HVM Thane', color: '#7b2d00', accent: '#ff6b35' },
-  west:  { name: 'West & East', color: '#003049', accent: '#fcbf49' }
-};
+let state = null;
+let busy = false;            // local lock (slot pulling or wheel spinning)
+let lastUpdate = 0;
+let currentWheelRotation = 0;
 
-const TOTAL_ROUNDS = 12;
-let currentZone = 'north';
-let appState = null;
-let isAnimating = {};
-let pollInterval = null;
-let wheelState = null;
-let pauseSyncFor = {}; // zone → timestamp until which we skip overwriting UI
-
-async function api(path, body) {
-  const opts = { method: body ? 'POST' : 'GET', headers: { 'Content-Type': 'application/json' } };
-  if (body) opts.body = JSON.stringify(body);
-  const res = await fetch(path, opts);
-  const data = await res.json().catch(() => ({}));
-  if (!res.ok) throw new Error(data.error || `HTTP ${res.status}`);
-  return data;
-}
-
-let lastStateHash = '';
+const WHEEL_COLORS = [
+  '#e63946', '#1d3557', '#f1c40f', '#2a9d8f',
+  '#e76f51', '#264653', '#ffd700', '#7209b7'
+];
 
 async function fetchState() {
+  if (busy) return;
   try {
-    const newState = await api('/api/state');
-    document.getElementById('connStatus').textContent = '● Connected';
-    document.getElementById('connStatus').classList.remove('error');
-    // Compare a stable hash — only re-render if the state actually changed
-    const newHash = JSON.stringify(newState);
-    if (newHash === lastStateHash) return; // no change, no flicker
-    lastStateHash = newHash;
-    appState = newState;
-    renderAll();
-  } catch (e) {
-    document.getElementById('connStatus').textContent = '● Disconnected';
-    document.getElementById('connStatus').classList.add('error');
-  }
-}
-
-function getPairedSet(z, round) { return new Set((z.pairings[round] || []).flat()); }
-
-function renderAll() {
-  if (!appState) return;
-  for (const zone of Object.keys(ZONE_META)) {
-    // Skip re-render if we're mid-animation for that zone
-    if (pauseSyncFor[zone] && Date.now() < pauseSyncFor[zone]) continue;
-    renderZone(zone);
-  }
-}
-
-function renderZone(zone) {
-  const z = appState[zone];
-  if (!z) return;
-  const panel = document.getElementById(`panel-${zone}`);
-  const meta = ZONE_META[zone];
-  const round = z.currentRound;
-  const pairings = z.pairings[round] || [];
-  const pairRepeats = z.pairRepeats[round] || [];
-  const pairedSet = getPairedSet(z, round);
-  const totalTLs = z.tls.length;
-  const allPaired = pairedSet.size >= totalTLs;
-
-  const dots = Array.from({ length: z.totalRounds }, (_, i) => {
-    let cls = 'prog-dot';
-    if (i + 1 < round) cls += ' done';
-    else if (i + 1 === round) cls += ' current';
-    return `<div class="${cls}"></div>`;
-  }).join('');
-
-  let interactiveHTML = '';
-  if (!z.roundActive) {
-    interactiveHTML = `<div class="locked-card">
-      <div class="locked-icon">🔒</div>
-      <div class="locked-text">Round ${round} — Not Started</div>
-      <div class="locked-sub">Waiting for admin to start the round…</div>
-    </div>`;
-  } else if (allPaired) {
-    const lastRound = round >= z.totalRounds;
-    const nextRoundBtn = lastRound ? '' : `<button class="spin-wheel-btn" onclick="onScreenAdvance('${zone}')" style="margin-top:18px">⏭ ADVANCE TO ROUND ${round + 1}</button>`;
-    const resetRoundBtn = `<button onclick="onScreenResetRound('${zone}')" style="display:inline-block;background:transparent;border:1px solid #ff4d4f;color:#ff4d4f;padding:8px 18px;border-radius:8px;font-family:'Barlow Condensed',sans-serif;font-size:12px;letter-spacing:1px;text-transform:uppercase;cursor:pointer;margin-top:10px">🔄 Reset This Round</button>`;
-    interactiveHTML = `<div class="complete-card">
-      <div class="complete-icon">${lastRound ? '🏆' : '✅'}</div>
-      <div class="complete-text">${lastRound ? 'FINAL ROUND DRAW COMPLETE!' : `Round ${round} Draw Complete`}</div>
-      <div class="complete-sub">${lastRound ? 'All 12 rounds drawn.' : 'Click below to advance to the next round.'}</div>
-      ${nextRoundBtn}
-      <div>${resetRoundBtn}</div>
-    </div>`;
-  } else if (z.currentSpinner) {
-    interactiveHTML = `<div class="upnext-card">
-      <div class="upnext-label">★ Up Next ★</div>
-      <div class="upnext-name">${z.currentSpinner}</div>
-      <button class="spin-wheel-btn" onclick="openWheel('${zone}')">🎡 SPIN THE WHEEL</button>
-    </div>`;
-  } else {
-    const remaining = z.tls.filter(t => !pairedSet.has(t));
-    interactiveHTML = `<div class="slot-section">
-      <div class="slot-section-title">🎰 SLOT MACHINE</div>
-      <div class="slot-section-sub">Pull to reveal the next TL who spins</div>
-      <div class="slot-machine">
-        <div class="slot-window">
-          <div class="slot-window-track" id="slotTrack-${zone}">
-            <div class="slot-window-item">?</div>
-          </div>
-        </div>
-      </div>
-      <button class="pull-btn" onclick="pullSlot('${zone}')">PULL!</button>
-      <div style="margin-top:14px;font-family:'Barlow Condensed',sans-serif;font-size:12px;letter-spacing:2px;text-transform:uppercase;color:var(--muted)">
-        ${remaining.length} TLs remaining · ${pairings.length} pairs formed
-      </div>
-    </div>`;
-  }
-
-  const cards = z.tls.map(tl => {
-    const isPaired = pairedSet.has(tl);
-    const isUpNext = z.currentSpinner === tl;
-    let cardClass = 'tl-card';
-    let statusText = 'Waiting…';
-    if (isPaired) {
-      cardClass += ' paired';
-      const pair = pairings.find(p => p.includes(tl));
-      const opponent = pair ? pair.find(p => p !== tl) : '?';
-      statusText = `vs ${opponent}`;
-    } else if (isUpNext) {
-      cardClass += ' upnext';
-      statusText = '★ Up Next';
-    } else if (z.roundActive && !allPaired) {
-      statusText = 'In Pool';
+    const r = await fetch('/api/state');
+    const newState = await r.json();
+    if (newState.lastUpdate !== lastUpdate) {
+      lastUpdate = newState.lastUpdate;
+      state = newState;
+      render();
     }
-    return `<div class="${cardClass}"><div class="tl-name">${tl}</div><div class="tl-status">${statusText}</div></div>`;
-  }).join('');
+  } catch (e) { console.error(e); }
+}
 
-  const pairingItems = pairings.length
-    ? pairings.map((pair, i) => {
-        const repeat = pairRepeats[i];
-        return `<div class="pairing-card">
-          <div class="pair-num">#${i + 1}</div>
-          <div class="pair-tl">${pair[0]}</div>
-          <div class="pair-vs">VS</div>
-          <div class="pair-tl right">${pair[1]}${repeat ? '<span class="pair-repeat">REPEAT</span>' : ''}</div>
-        </div>`;
-      }).join('')
-    : `<div style="color:var(--muted);font-family:'Barlow Condensed',sans-serif;font-size:14px;letter-spacing:1px;text-align:center;padding:24px;border:1px dashed var(--border);border-radius:10px">No pairings yet</div>`;
+function showError(msg) {
+  document.getElementById('error-area').innerHTML = `<div class="error">${msg}</div>`;
+  setTimeout(() => { document.getElementById('error-area').innerHTML = ''; }, 4000);
+}
 
-  let pastRoundsHTML = '';
-  if (round > 1) {
-    const pastRounds = [];
-    for (let r = round - 1; r >= 1; r--) {
-      const rPairings = z.pairings[r] || [];
-      const rRepeats = z.pairRepeats[r] || [];
-      if (rPairings.length === 0) continue;
-      const items = rPairings.map((pair, i) => {
-        const repeat = rRepeats[i];
-        return `<div class="pairing-card" style="animation:none">
-          <div class="pair-num">#${i + 1}</div>
-          <div class="pair-tl">${pair[0]}</div>
-          <div class="pair-vs">VS</div>
-          <div class="pair-tl right">${pair[1]}${repeat ? '<span class="pair-repeat">REPEAT</span>' : ''}</div>
-        </div>`;
-      }).join('');
-      pastRounds.push(`
-        <details class="past-round">
-          <summary class="past-round-summary">
-            <span class="past-round-title">Round ${r}</span>
-            <span class="past-round-meta">${rPairings.length} pair${rPairings.length === 1 ? '' : 's'}</span>
-            <span class="past-round-chevron">▾</span>
-          </summary>
-          <div class="past-round-body">${items}</div>
-        </details>
-      `);
-    }
-    if (pastRounds.length > 0) {
-      pastRoundsHTML = `<div class="section-title" style="margin-top:32px">📜 Past Rounds</div>
-        <div class="past-rounds-wrap">${pastRounds.join('')}</div>`;
-    }
+function renderRoundBar() {
+  if (!state) return;
+  const bar = document.getElementById('round-bar');
+  let html = '';
+  for (let i = 1; i <= state.totalRounds; i++) {
+    const isDone = state.pairings[i] && state.pairings[i].length === 8 && i < state.currentRound;
+    const isActive = i === state.currentRound;
+    const cls = isActive ? 'active' : (isDone ? 'done' : '');
+    html += `<span class="round-pill ${cls}">R${i}${isDone ? ' ✓' : ''}</span>`;
   }
-
-  panel.innerHTML = `
-    <div class="round-banner" style="background: linear-gradient(135deg, ${meta.color}cc 0%, ${meta.color}55 100%);">
-      <div>
-        <div class="round-label" style="color:${meta.accent}">Round ${round} / ${z.totalRounds}</div>
-        <div class="round-sub">${z.tls.length} TLs · ${pairings.length}/${Math.floor(totalTLs/2)} pairs</div>
-      </div>
-      <div class="round-prog">${dots}</div>
-    </div>
-    ${interactiveHTML}
-    <div class="section-title">TLs in This Zone</div>
-    <div class="tl-grid">${cards}</div>
-    <div class="section-title" style="margin-top:8px">Round ${round} Pairings</div>
-    <div class="pairings-list">${pairingItems}</div>
-    ${pastRoundsHTML}
-  `;
-  document.getElementById(`badge-${zone}`).textContent = z.tls.length;
+  bar.innerHTML = html;
 }
 
-function switchZone(zone) {
-  currentZone = zone;
-  document.querySelectorAll('.zone-tab').forEach(t => t.classList.remove('active'));
-  document.querySelector(`.zone-tab[data-zone="${zone}"]`).classList.add('active');
-  document.querySelectorAll('.zone-panel').forEach(p => p.classList.remove('active'));
-  document.getElementById(`panel-${zone}`).classList.add('active');
-}
-
-// ── SLOT MACHINE ──
-async function pullSlot(zone) {
-  if (isAnimating[zone]) return;
-  isAnimating[zone] = true;
-  const pullBtns = document.querySelectorAll(`#panel-${zone} .pull-btn`);
-  pullBtns.forEach(b => b.disabled = true);
-
-  let resp;
+// === SLOT MACHINE ===
+async function pullSlot() {
+  if (busy) return;
+  busy = true;
+  
+  const eligible = state.tms.filter(t => !state.paired.includes(t));
+  if (eligible.length === 0) { busy = false; return; }
+  
+  // Disable button visually
+  const btn = document.getElementById('slot-pull-btn');
+  if (btn) btn.disabled = true;
+  
+  // Start spinning the reel with random names
+  const reel = document.getElementById('slot-reel');
+  let spinInterval;
+  if (reel) {
+    let pos = 0;
+    spinInterval = setInterval(() => {
+      pos -= 70;
+      reel.style.transition = 'transform 0.08s linear';
+      reel.style.transform = `translateY(${pos}px)`;
+      // Append new random item to keep it cycling
+      const newItem = document.createElement('div');
+      newItem.className = 'slot-item';
+      newItem.textContent = eligible[Math.floor(Math.random() * eligible.length)];
+      reel.appendChild(newItem);
+    }, 80);
+  }
+  
+  // Call backend
+  let data;
   try {
-    resp = await api('/api/pull-slot', { zone });
+    const r = await fetch('/api/slot-pull', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({})
+    });
+    data = await r.json();
+    if (data.error) {
+      clearInterval(spinInterval);
+      busy = false;
+      showError(data.error);
+      fetchState();
+      return;
+    }
   } catch (e) {
-    showToast('⚠ ' + e.message);
-    isAnimating[zone] = false;
-    pullBtns.forEach(b => b.disabled = false);
+    clearInterval(spinInterval);
+    busy = false;
+    showError('Connection error.');
     return;
   }
-
-  pauseSyncFor[zone] = Date.now() + 3500;
-
-  const meta = ZONE_META[zone];
-  const pool = resp.pool || [];
-  const winner = resp.winner;
-  const shuffled = [...pool].sort(() => Math.random() - 0.5);
-  const items = [...shuffled, ...shuffled, ...shuffled, winner];
-  const track = document.getElementById(`slotTrack-${zone}`);
-  if (!track) { isAnimating[zone] = false; await fetchState(); return; }
-  track.innerHTML = items.map(t => `<div class="slot-window-item" style="color:${meta.accent}">${t}</div>`).join('');
-  track.style.transition = 'none';
-  track.style.transform = 'translateY(0)';
-  await new Promise(r => requestAnimationFrame(r));
-  const targetIdx = items.length - 1;
-  track.style.transition = 'transform 2.5s cubic-bezier(0.15,0.85,0.35,1)';
-  track.style.transform = `translateY(${-targetIdx * 90}px)`;
-  await new Promise(r => setTimeout(r, 2700));
-
-  pauseSyncFor[zone] = 0;
-  isAnimating[zone] = false;
-  await fetchState();
-  showToast(`🎰 ${winner} is up next!`);
+  
+  // Wait for animation drama
+  await new Promise(r => setTimeout(r, 2000));
+  clearInterval(spinInterval);
+  
+  // Land on the chosen name with smooth deceleration
+  if (reel) {
+    // Add the chosen name as the next item, and decelerate to it
+    const finalItem = document.createElement('div');
+    finalItem.className = 'slot-item';
+    finalItem.textContent = data.nextSpinner;
+    finalItem.id = 'slot-final';
+    reel.appendChild(finalItem);
+    
+    // Get current position and target
+    const items = reel.children.length;
+    const targetPos = -(items - 1) * 70;
+    reel.style.transition = 'transform 1.2s cubic-bezier(0.17, 0.67, 0.16, 0.99)';
+    reel.style.transform = `translateY(${targetPos}px)`;
+  }
+  
+  await new Promise(r => setTimeout(r, 1400));
+  
+  // Update state — render() will now show the chosen-spinner card
+  state = data.state;
+  lastUpdate = state.lastUpdate;
+  busy = false;
+  render();
 }
 
-// ── WHEEL ──
-let wheelOpening = {}; // zone → bool, prevents double-clicks
-
-async function openWheel(zone) {
-  if (wheelOpening[zone]) return; // already in progress
-  wheelOpening[zone] = true;
-
-  // Disable the spin button instantly so the user gets feedback
-  document.querySelectorAll(`#panel-${zone} .spin-wheel-btn`).forEach(b => {
-    b.disabled = true;
-    b.style.opacity = 0.5;
-    b.textContent = '⏳ LOADING WHEEL…';
-  });
-
-  // Read spinner from current state (already in memory — no need to fetch)
-  if (!appState || !appState[zone] || !appState[zone].currentSpinner) {
-    showToast('No spinner selected');
-    wheelOpening[zone] = false;
-    await fetchState();
-    return;
-  }
-  const spinner = appState[zone].currentSpinner;
-  const meta = ZONE_META[zone];
-
-  // Build & show the modal IMMEDIATELY with a loading state — user gets instant feedback
-  const overlay = document.createElement('div');
-  overlay.className = 'modal-overlay open';
-  overlay.id = 'wheelOverlay';
-  overlay.innerHTML = `
-    <div style="background:var(--card-bg);border:1px solid var(--border);border-radius:20px;padding:32px;max-width:540px;width:92%;text-align:center;position:relative">
-      <button class="modal-close" onclick="closeWheel()">✕</button>
-      <div style="font-family:'Bebas Neue',cursive;font-size:30px;letter-spacing:2px;color:${meta.accent};margin-bottom:4px">${spinner}</div>
-      <div id="wheelStatus" style="font-family:'Barlow Condensed',sans-serif;font-size:12px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:24px">Preparing wheel…</div>
-      <div class="wheel-container">
-        <div class="wheel-pointer"></div>
-        <svg class="wheel-svg" viewBox="0 0 360 360">
-          <g class="wheel-rotor" id="wheelRotor">
-            <circle cx="180" cy="180" r="170" fill="rgba(255,255,255,0.05)" stroke="${meta.accent}" stroke-width="4"/>
-            <text x="180" y="180" fill="${meta.accent}" font-family="Bebas Neue" font-size="20" text-anchor="middle" dominant-baseline="middle">LOADING…</text>
-          </g>
-        </svg>
-        <div class="wheel-center">SPIN</div>
-      </div>
-      <div id="wheelResult" style="margin-top:20px;min-height:50px"></div>
-      <button class="spin-wheel-btn" id="wheelCloseBtn" disabled style="margin-top:8px;opacity:0.5">SPINNING…</button>
-    </div>
-  `;
-  document.body.appendChild(overlay);
-
-  // Now make the API call
-  let resp;
-  try {
-    resp = await api('/api/spin-wheel', { zone, spinner });
-  } catch (e) {
-    document.getElementById('wheelStatus').textContent = '⚠ ' + e.message;
-    showToast('⚠ ' + e.message);
-    wheelOpening[zone] = false;
-    setTimeout(() => { closeWheel(); fetchState(); }, 2000);
-    return;
-  }
-  const { winner, candidates, willBeRepeat } = resp;
-  wheelState = { zone, spinner, winner, candidates, willBeRepeat, meta };
-  pauseSyncFor[zone] = Date.now() + 6000;
-
-  // Update status text
-  const statusEl = document.getElementById('wheelStatus');
-  if (statusEl) statusEl.textContent = 'Spinning to reveal your opponent…';
-
-  // Render the real wheel segments
-  const rotor = document.getElementById('wheelRotor');
-  if (rotor) {
-    rotor.innerHTML = buildWheelSegments(candidates, meta.accent);
-    rotor.style.transition = 'none';
-    rotor.style.transform = 'rotate(0deg)';
-  }
-
-  // Animate
-  const winnerIdx = candidates.indexOf(winner);
-  const anglePer = 360 / candidates.length;
-  const winnerAngle = winnerIdx * anglePer + anglePer / 2;
-  const baseRotation = -winnerAngle;
-  const fullSpins = 5;
-  const finalRotation = fullSpins * 360 + baseRotation;
-  await new Promise(r => requestAnimationFrame(r));
-  await new Promise(r => requestAnimationFrame(r)); // double rAF ensures the reset above lands
-  if (rotor) {
-    rotor.style.transition = 'transform 4.5s cubic-bezier(0.17, 0.67, 0.21, 0.98)';
-    rotor.style.transform = `rotate(${finalRotation}deg)`;
-  }
-
-  await new Promise(r => setTimeout(r, 4700));
-
-  // Show result
-  const resultDiv = document.getElementById('wheelResult');
-  if (resultDiv) {
-    resultDiv.innerHTML = `
-      <div style="font-family:'Barlow Condensed',sans-serif;font-size:12px;letter-spacing:2px;color:var(--muted);text-transform:uppercase">Paired With</div>
-      <div style="font-family:'Bebas Neue',cursive;font-size:28px;letter-spacing:1px;color:${meta.accent};margin-top:4px">⚔ ${winner}${willBeRepeat ? ' <span style="font-size:10px;color:#ff8a65;border:1px solid #ff8a65;padding:2px 6px;border-radius:3px;vertical-align:middle">REPEAT</span>' : ''}</div>
-    `;
-  }
-  const closeBtn = document.getElementById('wheelCloseBtn');
-  if (closeBtn) {
-    closeBtn.disabled = false;
-    closeBtn.style.opacity = 1;
-    closeBtn.textContent = '✅ CLOSE';
-    closeBtn.onclick = () => { closeWheel(); fetchState(); };
-  }
-  showToast(`${spinner} ⚔ ${winner}${willBeRepeat ? ' (repeat)' : ''}`);
-  pauseSyncFor[zone] = 0;
-  wheelOpening[zone] = false;
-  await fetchState();
-}
-
-function buildWheelSegments(candidates, accentColor) {
-  const PALETTE = [
-    '#c5283d','#1e6091','#5b8c5a','#b56576','#6a4c93','#e76f51',
-    '#2a9d8f','#bc6c25','#386641','#7b2cbf','#005f73','#9d0208',
-    '#3a5a40','#774936','#1d3557','#a4133c'
-  ];
-  const n = candidates.length;
-  const R = 170, cx = 180, cy = 180;
+// === FORTUNE WHEEL ===
+function buildWheel(opponents) {
+  const cx = 230, cy = 230, r = 220;
+  const n = opponents.length;
+  if (n === 0) return '';
   const anglePer = 360 / n;
-  let svg = '';
-  const defs = [];
-  candidates.forEach((name, i) => {
+  let paths = '';
+  let labels = '';
+  
+  opponents.forEach((opp, i) => {
     const startAngle = i * anglePer - 90;
     const endAngle = (i + 1) * anglePer - 90;
-    const x1 = cx + R * Math.cos(startAngle * Math.PI / 180);
-    const y1 = cy + R * Math.sin(startAngle * Math.PI / 180);
-    const x2 = cx + R * Math.cos(endAngle * Math.PI / 180);
-    const y2 = cy + R * Math.sin(endAngle * Math.PI / 180);
+    const startRad = (startAngle * Math.PI) / 180;
+    const endRad = (endAngle * Math.PI) / 180;
+    const x1 = cx + r * Math.cos(startRad);
+    const y1 = cy + r * Math.sin(startRad);
+    const x2 = cx + r * Math.cos(endRad);
+    const y2 = cy + r * Math.sin(endRad);
     const largeArc = anglePer > 180 ? 1 : 0;
-    let colorIdx = i % PALETTE.length;
-    if (i === n - 1 && colorIdx === 0) colorIdx = PALETTE.length - 2;
-    const baseColor = PALETTE[colorIdx];
-    const gradId = `grad-${i}`;
-    defs.push(`<radialGradient id="${gradId}" cx="50%" cy="50%" r="70%"><stop offset="0%" stop-color="${baseColor}" stop-opacity="0.85"/><stop offset="100%" stop-color="${baseColor}" stop-opacity="1"/></radialGradient>`);
-    svg += `<path d="M${cx},${cy} L${x1},${y1} A${R},${R} 0 ${largeArc},1 ${x2},${y2} Z" fill="url(#${gradId})" stroke="rgba(255,255,255,0.15)" stroke-width="1.5"/>`;
-    const labelAngle = startAngle + anglePer / 2;
-    const labelRad = labelAngle * Math.PI / 180;
-    const textRadius = R * 0.58;
-    const lx = cx + textRadius * Math.cos(labelRad);
-    const ly = cy + textRadius * Math.sin(labelRad);
-    const rotation = labelAngle;
-    const maxChars = n > 12 ? 11 : (n > 8 ? 14 : 18);
-    const display = name.length > maxChars ? name.slice(0, maxChars - 1) + '…' : name;
-    const fontSize = n > 12 ? 10 : (n > 8 ? 12 : 14);
-    svg += `<text x="${lx}" y="${ly}" fill="#ffffff" font-family="Barlow Condensed" font-weight="700" font-size="${fontSize}" text-anchor="middle" dominant-baseline="middle" transform="rotate(${rotation}, ${lx}, ${ly})" style="text-shadow: 0 1px 2px rgba(0,0,0,0.5); letter-spacing: 0.5px;">${display}</text>`;
+    const color = WHEEL_COLORS[i % WHEEL_COLORS.length];
+    
+    paths += `<path d="M ${cx} ${cy} L ${x1} ${y1} A ${r} ${r} 0 ${largeArc} 1 ${x2} ${y2} Z" fill="${color}" stroke="#1a1f3a" stroke-width="2"/>`;
+    
+    const midAngle = (startAngle + endAngle) / 2;
+    const midRad = (midAngle * Math.PI) / 180;
+    const labelR = r * 0.65;
+    const lx = cx + labelR * Math.cos(midRad);
+    const ly = cy + labelR * Math.sin(midRad);
+    const rotation = midAngle + 90;
+    const fontSize = n > 12 ? 11 : (n > 8 ? 13 : 15);
+    
+    labels += `<text x="${lx}" y="${ly}" text-anchor="middle" dominant-baseline="middle" fill="#fff" font-size="${fontSize}" font-weight="700" transform="rotate(${rotation} ${lx} ${ly})" style="paint-order:stroke;stroke:rgba(0,0,0,0.5);stroke-width:2px;">${opp}</text>`;
   });
-  return `<defs>${defs.join('')}</defs>` + svg +
-    `<circle cx="${cx}" cy="${cy}" r="${R}" fill="none" stroke="${accentColor}" stroke-width="4"/>` +
-    `<circle cx="${cx}" cy="${cy}" r="${R * 0.95}" fill="none" stroke="rgba(255,255,255,0.15)" stroke-width="1"/>`;
+  
+  return `<svg class="wheel-svg" id="wheel-svg" viewBox="0 0 460 460" xmlns="http://www.w3.org/2000/svg" style="transform: rotate(${currentWheelRotation}deg);"><circle cx="${cx}" cy="${cy}" r="${r+4}" fill="#8b6914"/><circle cx="${cx}" cy="${cy}" r="${r+2}" fill="#1a1f3a"/>${paths}${labels}</svg>`;
 }
 
-function closeWheel() {
-  const overlay = document.getElementById('wheelOverlay');
-  if (overlay) overlay.remove();
-  wheelState = null;
-}
-
-// ── ADMIN ──
-function openAdmin() { document.getElementById('adminModal').classList.add('open'); }
-function closeAdmin() { document.getElementById('adminModal').classList.remove('open'); }
-
-// Cache admin password in sessionStorage so on-screen Advance / Reset Round buttons work
-function getCachedPw() { return sessionStorage.getItem('tl_admin_pw') || ''; }
-function setCachedPw(pw) { sessionStorage.setItem('tl_admin_pw', pw); }
-function clearCachedPw() { sessionStorage.removeItem('tl_admin_pw'); }
-
-async function adminCall(path, extra) {
-  const pw = document.getElementById('adminPw').value;
+async function spinWheel() {
+  if (busy || !state.currentSpinner) return;
+  busy = true;
+  
+  const tm = state.currentSpinner;
+  const available = state.tms.filter(t => !state.paired.includes(t));
+  const others = available.filter(p => p !== tm);
+  
+  // Render the wheel stage
+  renderSpinStage(tm, others);
+  await new Promise(r => setTimeout(r, 400));
+  
+  let data;
   try {
-    const r = await api(path, Object.assign({ password: pw }, extra));
-    if (pw) setCachedPw(pw); // remember on success
-    return r;
-  } catch (e) {
-    if (e.message && e.message.toLowerCase().includes('password')) clearCachedPw();
-    showToast('⚠ ' + e.message);
-    throw e;
-  }
-}
-
-// For on-screen admin actions (advance / reset-round) — uses cached pw or prompts
-async function onScreenAdminCall(path, extra, reason) {
-  let pw = getCachedPw();
-  if (!pw) {
-    pw = prompt(reason || 'Admin password:');
-    if (!pw) return null;
-  }
-  try {
-    const r = await api(path, Object.assign({ password: pw }, extra));
-    setCachedPw(pw);
-    return r;
-  } catch (e) {
-    if (e.message && e.message.toLowerCase().includes('password')) {
-      clearCachedPw();
-      showToast('⚠ Wrong password');
-    } else {
-      showToast('⚠ ' + e.message);
+    const r = await fetch('/api/spin', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ spinner: tm })
+    });
+    data = await r.json();
+    if (data.error) {
+      busy = false;
+      showError(data.error);
+      fetchState();
+      return;
     }
-    return null;
+  } catch (e) {
+    busy = false;
+    showError('Connection error.');
+    return;
+  }
+  
+  // Calculate landing rotation
+  const opponentIndex = others.indexOf(data.opponent);
+  const anglePer = 360 / others.length;
+  const targetMidAngle = opponentIndex * anglePer + anglePer / 2;
+  const baseRotation = -targetMidAngle;
+  const fullSpins = 5;
+  const jitter = (Math.random() - 0.5) * (anglePer * 0.6);
+  const finalRotation = currentWheelRotation - (currentWheelRotation % 360) + 360 * fullSpins + baseRotation + jitter;
+  
+  currentWheelRotation = finalRotation;
+  const svg = document.getElementById('wheel-svg');
+  if (svg) svg.style.transform = `rotate(${finalRotation}deg)`;
+  
+  await new Promise(r => setTimeout(r, 5200));
+  
+  // Reveal
+  document.getElementById('result-spinner-name').textContent = tm;
+  document.getElementById('result-opponent-name').textContent = data.opponent;
+  document.getElementById('result-overlay').classList.add('show');
+  fireConfetti();
+  
+  state = data.state;
+  lastUpdate = state.lastUpdate;
+  busy = false;
+}
+
+function fireConfetti() {
+  const colors = ['#ffd700', '#ff6b35', '#48bb78', '#4299e1', '#ed64a6'];
+  for (let i = 0; i < 60; i++) {
+    const c = document.createElement('div');
+    c.className = 'confetti';
+    c.style.left = Math.random() * 100 + 'vw';
+    c.style.background = colors[Math.floor(Math.random() * colors.length)];
+    c.style.animationDelay = Math.random() * 0.5 + 's';
+    c.style.animationDuration = (2 + Math.random() * 2) + 's';
+    document.body.appendChild(c);
+    setTimeout(() => c.remove(), 5000);
   }
 }
 
-async function onScreenAdvance(zone) {
-  const r = await onScreenAdminCall('/api/admin/advance-round', { zone }, 'Admin password to advance the round:');
-  if (r) { await fetchState(); showToast(`⏭ ${ZONE_META[zone].name} advanced to Round ${r.round}`); }
+function closeResult() {
+  document.getElementById('result-overlay').classList.remove('show');
+  render();
 }
 
-async function onScreenResetRound(zone) {
-  if (!confirm(`Reset ALL pairings in the current round for ${ZONE_META[zone].name}? Past rounds stay intact.`)) return;
-  const r = await onScreenAdminCall('/api/admin/reset-round', { zone }, 'Admin password to reset this round:');
-  if (r) { await fetchState(); showToast(`🔄 ${ZONE_META[zone].name} Round ${r.round} reset — click ▶ Start Round to redo it`); }
+function renderSpinStage(tm, others) {
+  const main = document.getElementById('main-content');
+  main.innerHTML = `
+    <div class="stage">
+      <div class="stage-title">⚡ The Wheel Decides ⚡</div>
+      <div class="stage-message"><strong>${tm}</strong> is spinning the wheel of fate...</div>
+      <div class="wheel-container">
+        <div class="wheel-pointer"></div>
+        ${buildWheel(others)}
+        <div class="wheel-center"></div>
+      </div>
+    </div>
+  `;
 }
 
-async function startRound() {
-  const zone = document.getElementById('ctrlZone').value;
+function renderSlotMachine(eligible) {
+  // Pre-pull state: show only mystery symbols
+  return `
+    <div class="slot-machine">
+      <div class="slot-window">
+        <div class="slot-reel" id="slot-reel">
+          <div class="slot-item slot-mystery">❓</div>
+        </div>
+        <div class="slot-window-frame"></div>
+      </div>
+      <button class="slot-pull-btn" id="slot-pull-btn" onclick="pullSlot()">🎰 Pull!</button>
+    </div>
+  `;
+}
+
+function render() {
+  if (!state) return;
+  renderRoundBar();
+  if (busy) return;
+  
+  const main = document.getElementById('main-content');
+  const available = state.tms.filter(t => !state.paired.includes(t));
+  const currentPairs = state.pairings[state.currentRound] || [];
+  const roundComplete = available.length === 0;
+  const tournamentComplete = state.currentRound === state.totalRounds && roundComplete;
+  
+  let html = '';
+  
+  // === FLOW STATES ===
+  if (tournamentComplete) {
+    html += `<div class="tournament-done">🏆 Tournament Complete — All 8 rounds done</div>`;
+  } 
+  else if (roundComplete) {
+    html += `
+      <div class="complete-banner">
+        <div style="font-size:24px;margin-bottom:6px;">🎉</div>
+        <span class="label">Round ${state.currentRound} complete</span>
+        <div style="font-size:12px;color:#8a8db5;margin-top:8px;">Waiting for admin to start the next round</div>
+      </div>
+    `;
+  }
+  else if (!state.roundActive) {
+    // Waiting for admin to start this round
+    html += `
+      <div class="waiting-banner">
+        <div class="icon">🔒</div>
+        <div class="title">Round ${state.currentRound} — Not Started</div>
+        <div class="desc">Waiting for admin to begin the round</div>
+      </div>
+    `;
+  }
+  else if (state.currentSpinner) {
+    // Slot has picked someone — they need to spin the wheel
+    html += `
+      <div class="chosen-spinner-card">
+        <div class="chosen-label">★ Up Next ★</div>
+        <div class="chosen-name">${state.currentSpinner}</div>
+        <div class="chosen-prompt">Hit the button to spin the wheel of fate</div>
+        <button class="spin-action-btn" onclick="spinWheel()">🎡 Spin the Wheel</button>
+      </div>
+    `;
+  }
+  else {
+    // Round active, no current spinner — show slot machine
+    html += `
+      <div class="stage">
+        <div class="stage-title">🎰 Slot Machine — Who Spins Next?</div>
+        <div class="stage-message">${available.length} TM${available.length !== 1 ? 's' : ''} remaining this round</div>
+        ${renderSlotMachine(available)}
+        <div class="remaining-list">
+          ${available.map(tm => `<span class="tm-chip">${tm}</span>`).join('')}
+        </div>
+      </div>
+    `;
+  }
+  
+  // === CURRENT ROUND PAIRINGS ===
+  if (currentPairs.length > 0) {
+    html += `
+      <div class="section-title">Round ${state.currentRound} Matchups</div>
+      <div class="pairings-grid">
+        ${currentPairs.map(([a, b]) => `
+          <div class="pairing">
+            <span class="pairing-name">${a}</span>
+            <span class="pairing-vs">VS</span>
+            <span class="pairing-name">${b}</span>
+          </div>
+        `).join('')}
+      </div>
+    `;
+  }
+  
+  // === HISTORY ===
+  const rounds = Object.keys(state.pairings).filter(r => +r < state.currentRound).sort((a,b) => +a - +b);
+  if (rounds.length > 0) {
+    html += `
+      <details>
+        <summary>Tournament history (${rounds.length} round${rounds.length !== 1 ? 's' : ''})</summary>
+        ${rounds.map(r => `
+          <div class="history-round">
+            <div class="history-round-label">Round ${r}</div>
+            <div class="history-pairings">
+              ${state.pairings[r].map(([a, b]) => `<div class="history-pair">${a} vs ${b}</div>`).join('')}
+            </div>
+          </div>
+        `).join('')}
+      </details>
+    `;
+  }
+  
+  main.innerHTML = html;
+}
+
+// === ADMIN ===
+function openAdmin() {
+  const startActionBtn = state && !state.roundActive && (!state.pairings[state.currentRound] || state.pairings[state.currentRound].length < 8)
+    ? `<button class="modal-btn primary" onclick="adminAction('start-round')">▶ Start Round ${state.currentRound}</button>`
+    : '';
+  const advanceBtn = state && state.pairings[state.currentRound] && state.pairings[state.currentRound].length === 8 && state.currentRound < state.totalRounds
+    ? `<button class="modal-btn primary" onclick="adminAction('advance-round')">⏭ Advance to Round ${state.currentRound + 1}</button>`
+    : '';
+  
+  document.getElementById('modal-root').innerHTML = `
+    <div class="modal-bg" onclick="if(event.target===this)closeModal()">
+      <div class="modal">
+        <h2>⚙ Admin Panel</h2>
+        <input type="password" id="admin-pwd" placeholder="Admin password" autofocus />
+        ${startActionBtn}
+        ${advanceBtn}
+        <button class="modal-btn" onclick="adminAction('clear-spinner')">🔄 Clear stuck spinner</button>
+        <button class="modal-btn" onclick="adminAction('reset-round')">↺ Reset current round</button>
+        <button class="modal-btn" onclick="adminAction('reset-all')">⚠ Reset entire tournament</button>
+        <button class="modal-btn" onclick="openEditNames()">✎ Edit TM names</button>
+        <button class="modal-btn" onclick="closeModal()" style="margin-top:12px;">Close</button>
+      </div>
+    </div>
+  `;
+}
+
+function closeModal() { document.getElementById('modal-root').innerHTML = ''; }
+
+async function adminAction(action) {
+  const pwd = document.getElementById('admin-pwd').value;
+  if (!pwd) { alert('Enter admin password'); return; }
+  const msgs = {
+    'start-round': null, // No confirm needed
+    'advance-round': 'Advance to next round?',
+    'reset-round': 'Reset current round?',
+    'reset-all': 'Reset ENTIRE tournament? This cannot be undone.',
+    'clear-spinner': 'Clear the current spinner queue?'
+  };
+  if (msgs[action] && !confirm(msgs[action])) return;
   try {
-    const r = await adminCall('/api/admin/start-round', { zone });
-    await fetchState();
-    showToast(`▶ ${ZONE_META[zone].name} Round ${r.round} started!`);
-  } catch (e) {}
+    const r = await fetch(`/api/${action}`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ password: pwd })
+    });
+    const data = await r.json();
+    if (data.error) { alert(data.error); return; }
+    state = data;
+    lastUpdate = state.lastUpdate;
+    closeModal();
+    render();
+  } catch (e) { alert('Error: ' + e.message); }
 }
 
-async function advanceRound() {
-  const zone = document.getElementById('ctrlZone').value;
+function openEditNames() {
+  const pwd = document.getElementById('admin-pwd')?.value || '';
+  document.getElementById('modal-root').innerHTML = `
+    <div class="modal-bg" onclick="if(event.target===this)closeModal()">
+      <div class="modal">
+        <h2>✎ Edit 16 TM Names</h2>
+        <input type="password" id="admin-pwd2" placeholder="Admin password" value="${pwd}" />
+        ${state.tms.map((tm, i) => `
+          <input type="text" id="tm-${i}" value="${tm.replace(/"/g,'&quot;')}" placeholder="TM ${i+1}" />
+        `).join('')}
+        <button class="modal-btn primary" onclick="saveNames()" style="margin-top:8px;">Save</button>
+        <button class="modal-btn" onclick="closeModal()">Cancel</button>
+      </div>
+    </div>
+  `;
+}
+
+async function saveNames() {
+  const pwd = document.getElementById('admin-pwd2').value;
+  if (!pwd) { alert('Enter admin password'); return; }
+  const tms = [];
+  for (let i = 0; i < 16; i++) {
+    const v = document.getElementById(`tm-${i}`).value.trim();
+    if (!v) { alert(`TM ${i+1} name is empty`); return; }
+    tms.push(v);
+  }
   try {
-    const r = await adminCall('/api/admin/advance-round', { zone });
-    await fetchState();
-    showToast(`⏭ ${ZONE_META[zone].name} advanced to Round ${r.round}`);
-  } catch (e) {}
+    const r = await fetch('/api/update-tms', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ password: pwd, tms })
+    });
+    const data = await r.json();
+    if (data.error) { alert(data.error); return; }
+    state = data;
+    lastUpdate = state.lastUpdate;
+    closeModal();
+    render();
+  } catch (e) { alert('Error: ' + e.message); }
 }
 
-async function clearSpinner() {
-  const zone = document.getElementById('ctrlZone').value;
-  try {
-    await adminCall('/api/admin/clear-spinner', { zone });
-    await fetchState();
-    showToast(`Stuck spinner cleared in ${ZONE_META[zone].name}`);
-  } catch (e) {}
-}
-
-async function resetZone() {
-  if (!confirm('Reset this zone? All data will be cleared.')) return;
-  const zone = document.getElementById('resetZone').value;
-  try {
-    await adminCall('/api/admin/reset-zone', { zone });
-    await fetchState();
-    showToast(`${ZONE_META[zone].name} reset!`);
-  } catch (e) {}
-}
-
-async function adminResetRound() {
-  const zone = document.getElementById('resetZone').value;
-  if (!confirm(`Reset ALL pairings in the current round for ${ZONE_META[zone].name}? Past rounds stay intact.`)) return;
-  try {
-    const r = await adminCall('/api/admin/reset-round', { zone });
-    await fetchState();
-    showToast(`🔄 ${ZONE_META[zone].name} Round ${r.round} reset — click ▶ Start Round to redo it`);
-  } catch (e) {}
-}
-
-async function resetAll() {
-  if (!confirm('Reset ALL zones? This cannot be undone!')) return;
-  try {
-    await adminCall('/api/admin/reset-all', {});
-    await fetchState();
-    closeAdmin();
-    showToast('All zones reset!');
-  } catch (e) {}
-}
-
-function showToast(msg) {
-  const t = document.getElementById('toast');
-  t.textContent = msg;
-  t.classList.add('show');
-  setTimeout(() => t.classList.remove('show'), 3000);
-}
-
-document.getElementById('adminModal').addEventListener('click', e => {
-  if (e.target === document.getElementById('adminModal')) closeAdmin();
-});
-
-// ── INIT ──
 fetchState();
-pollInterval = setInterval(fetchState, 3000);
+setInterval(fetchState, 3000);
 </script>
 </body>
 </html>
