@@ -22,9 +22,9 @@ app.use(express.json());
 app.use(express.static('public'));
 
 const defaultState = {
-  tms: ['TM 1','TM 2','TM 3','TM 4','TM 5','TM 6','TM 7','TM 8','TM 9','TM 10','TM 11','TM 12','TM 13','TM 14','TM 15','TM 16'],
+  tms: ['Aali','Dharma','Praveen','Hyderabad TM','Vishaka','Pankaj','Jyoti','Priyanshi','Shriprasad','Ashutosh','Mayankgiri','Puneet','Pushpa','Apoorv','Manan','Harish'],
   currentRound: 1,
-  totalRounds: 8,
+  totalRounds: 12,
   pairings: {},
   paired: [],         // TMs already paired this round
   results: {},
