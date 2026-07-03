@@ -777,13 +777,13 @@ function render() {
   
   // === FLOW STATES ===
   if (tournamentComplete) {
-    html += `<div class="tournament-done">🏆 Tournament Complete — All 8 rounds done</div>`;
+    html += `<div class="tournament-done">🏆 Tournament Complete — All 12 rounds done</div>`;
   } 
   else if (roundComplete) {
     html += `
       <div class="complete-banner">
         <div style="font-size:24px;margin-bottom:6px;">🎉</div>
-        <span class="label">Round ${state.currentRound} complete</span>
+        <span class="label">Round ${state.currentRound} Draw Complete</span>
         <div style="font-size:12px;color:#8a8db5;margin-top:8px;">Waiting for admin to start the next round</div>
       </div>
     `;
